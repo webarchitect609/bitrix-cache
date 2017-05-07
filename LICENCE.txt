@@ -1,0 +1,22 @@
+Copyright (c) Sergey Gripinskiy web-architect@mail.ru
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+USAGE OF THIS SOFTWARE OR ANY PART OF IT FOR COMMERCIAL PURPOSES
+OR AS PART OF COMMERCIAL PRODUCTS IS STRONGLY PROHIBITED FOR
+COMPANIES "1C", "1C-Bitrix" AND ANY OTHER RELATED OR CHILD COMPANIES
+OF MENTIONED ABOVE.
+
+ИСПОЛЬЗОВАНИЕ НАСТОЯЩЕГО ПРОДУКТА ИЛИ ЛЮБОЙ ЕГО ЧАСТИ В КОММЕРЧЕСКИХ ЦЕЛЯХ
+ИЛИ КАК ЧАСТЬ КОММЕРЧЕСКОГО ПРОДУКТА КАТЕГОРИЧЕСКИ ЗАПРЕЩАЕТСЯ ДЛЯ
+КОМПАНИЙ "1С", "1С-БИТРИКС" И ДЛЯ ЛЮБОЙ ДРУГОЙ СВЯЗАННОЙ ИЛИ ДОЧЕРНЕЙ
+КОМПАНИИ УПОМЯНУТЫХ ВЫШЕ ОРГАНИЗАЦИЙ.

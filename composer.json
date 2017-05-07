@@ -6,6 +6,7 @@
     "bitrix",
     "cache"
   ],
+  "license": "MIT",
   "authors": [
     {
       "name": "Sergey Gripinskiy",
