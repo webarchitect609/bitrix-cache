@@ -52,10 +52,10 @@ class BitrixCache
      * @return array Если callback возвращает не array, то будет возвращён array вида ['result' => $callbackResult]
      * @throws Exception
      *
-     * TODO Добавить передачу аргументов в callback
      */
     public function resultOf(callable $callback)
     {
+        //TODO Добавить передачу аргументов в callback?
         $this->callback = $callback;
         $this->setDefaultParams();
 
