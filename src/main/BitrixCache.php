@@ -99,11 +99,22 @@ class BitrixCache
 
             try {
 
-                $result = $this->doExecute();
+                $result = ($this->callback)();
 
             } catch (Exception $exception) {
+
                 $this->abortAllCache();
                 throw $exception;
+
+            }
+
+            if (is_null($result)) {
+                $this->abortAllCache();
+                return ['result' => $result];
+            }
+
+            if (!is_array($result)) {
+                $result = ['result' => $result];
             }
 
             $this->getCache()->endDataCache($result);
@@ -114,24 +125,6 @@ class BitrixCache
         } else {
             return $this->getCache()->getVars();
         }
-    }
-
-    /**
-     * @return array
-     */
-    protected function doExecute()
-    {
-        $result = ($this->callback)();
-
-        if (is_null($result)) {
-            $this->abortAllCache();
-        }
-
-        if (!is_array($result)) {
-            $result = ['result' => $result];
-        }
-
-        return $result;
     }
 
     /**
