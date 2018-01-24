@@ -55,7 +55,6 @@ class BitrixCache
      */
     public function resultOf(callable $callback)
     {
-        //TODO Добавить передачу аргументов в callback?
         $this->callback = $callback;
         $this->setDefaultParams();
 
@@ -103,13 +102,13 @@ class BitrixCache
 
             } catch (Exception $exception) {
 
-                $this->abortAllCache();
+                $this->abortCache();
                 throw $exception;
 
             }
 
             if (is_null($result)) {
-                $this->abortAllCache();
+                $this->abortCache();
                 return ['result' => $result];
             }
 
@@ -246,6 +245,7 @@ class BitrixCache
 
     /**
      * @return BitrixMainDataCache
+     * @throws \Bitrix\Main\SystemException
      */
     public function getCache()
     {
@@ -266,6 +266,7 @@ class BitrixCache
 
     /**
      * @return void
+     * @throws \Bitrix\Main\SystemException
      */
     protected function startTagCache()
     {
@@ -280,6 +281,7 @@ class BitrixCache
 
     /**
      * @return void
+     * @throws \Bitrix\Main\SystemException
      */
     protected function endTagCache()
     {
@@ -289,9 +291,12 @@ class BitrixCache
     }
 
     /**
+     * Отменяет запись кеша.
+     *
      * @return void
+     * @throws \Bitrix\Main\SystemException
      */
-    protected function abortAllCache()
+    public function abortCache()
     {
         $this->getCache()->abortDataCache();
         if ($this->hasTags()) {
