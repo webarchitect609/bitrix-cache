@@ -80,7 +80,7 @@ class BitrixCache
         }
 
         if (trim($this->getPath()) == '') {
-            $this->withPath('/' . $this->getId());
+            $this->withPath('/');
         }
     }
 
