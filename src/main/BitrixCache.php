@@ -30,6 +30,11 @@ class BitrixCache
     private $path = '';
 
     /**
+     * @var string
+     */
+    private $baseDir = 'cache';
+
+    /**
      * @var array
      */
     private $tags = [];
@@ -59,7 +64,7 @@ class BitrixCache
         $this->setDefaultParams();
 
         if ($this->isClearCache()) {
-            $this->getCache()->clean($this->getId(), $this->getPath());
+            $this->getCache()->clean($this->getId(), $this->getPath(), $this->getBaseDir());
         }
 
         return $this->execute();
@@ -91,7 +96,7 @@ class BitrixCache
     private function execute()
     {
         if (
-            $this->getCache()->startDataCache($this->getTime(), $this->getId(), $this->getPath())
+            $this->getCache()->startDataCache($this->getTime(), $this->getId(), $this->getPath(), [], $this->getBaseDir())
             || $this->isClearCache()
         ) {
             $this->startTagCache();
@@ -239,6 +244,26 @@ class BitrixCache
     public function withPath($path)
     {
         $this->path = trim($path);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseDir()
+    {
+        return $this->baseDir;
+    }
+
+    /**
+     * @param string $baseDir
+     *
+     * @return $this
+     */
+    public function withBaseDir($baseDir)
+    {
+        $this->baseDir = $baseDir;
 
         return $this;
     }
