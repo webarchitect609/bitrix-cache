@@ -1,6 +1,6 @@
 {
   "name": "webarchitect609/bitrix-cache",
-  "description": "Comfortable fluent-interface for Bitrix cache.",
+  "description": "Comfortable fluent interface for Bitrix cache.",
   "homepage": "https://github.com/webarchitect609/bitrix-cache",
   "keywords": [
     "bitrix",
@@ -10,15 +10,17 @@
   "authors": [
     {
       "name": "Sergey Gripinskiy",
-      "email": "web-architect@mail.ru"
+      "email": "web-architect@mail.ru",
+      "role": "Author"
     },
     {
       "name": "Oleg Maksimenko",
-      "email": "oleg.39style@gmail.com"
+      "email": "oleg.39style@gmail.com",
+      "role": "Contributor"
     }
   ],
   "require": {
-    "php": ">=5.5.0"
+    "php": "^5.5 | ^7.1"
   },
   "autoload": {
     "psr-4": {

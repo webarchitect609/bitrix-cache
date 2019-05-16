@@ -4,11 +4,19 @@ namespace WebArch\BitrixCache;
 
 use Bitrix\Main\Application;
 use Bitrix\Main\Data\Cache as BitrixMainDataCache;
+use Bitrix\Main\SystemException;
 use Exception;
+use ReflectionException;
 use ReflectionFunction;
+use UnexpectedValueException;
 
 class BitrixCache
 {
+    /**
+     * Ключ для сохранения результата в кеше.
+     */
+    const RESULT_KEY = '24985a76-23ee-46d6-aab6-2dcbac7190f6';
+
     /**
      * @var BitrixMainDataCache
      */
@@ -54,8 +62,11 @@ class BitrixCache
      *
      * @param callable $callback Если callback возвращает null, записи кеша не будет.
      *
-     * @return array Если callback возвращает не array, то будет возвращён array вида ['result' => $callbackResult]
      * @throws Exception
+     * @return array Если callback возвращает не array, то будет возвращён array вида ['result' => $callbackResult]
+     *
+     * @deprecated Будет удалён в версии 2.0
+     * @see callback()
      *
      */
     public function resultOf(callable $callback)
@@ -71,39 +82,74 @@ class BitrixCache
     }
 
     /**
+     * Вызов callback, результат выполнения которого кешируется.
+     *
+     * Если callback возвращает null или выбрасывает исключение, записи кеша не будет.
+     *
+     * @param callable $callback
+     *
+     * @throws ReflectionException
+     * @throws Exception
+     * @return mixed Закешированный результат выполнения $callback.
+     */
+    public function callback(callable $callback)
+    {
+        $this->callback = $callback;
+        $this->setDefaultParams();
+
+        if ($this->isClearCache()) {
+            $this->getCache()->clean($this->getId(), $this->getPath(), $this->getBaseDir());
+        }
+
+        return $this->executeCallback();
+    }
+
+    /**
+     * @throws ReflectionException
      * @return void
      */
     protected function setDefaultParams()
     {
         if ($this->getTime() == 0) {
-            $this->withTime(3600);
+            $this->setTime(3600);
         }
 
         if (trim($this->getId()) == '') {
             $ref = new ReflectionFunction($this->callback);
-            $this->withId(md5($ref->getFileName() . $ref->getStartLine() . $ref->getEndLine()));
+            $this->setId(md5($ref->getFileName() . $ref->getStartLine() . $ref->getEndLine()));
         }
 
         if (trim($this->getPath()) == '') {
-            $this->withPath('/');
+            $this->setPath('/');
         }
     }
 
     /**
-     * @return array
      * @throws Exception
+     * @return array
+     *
+     * @deprecated Будет удалён в версии 2.0
+     * @see executeCallback()
+     *
      */
     private function execute()
     {
         if (
-            $this->getCache()->startDataCache($this->getTime(), $this->getId(), $this->getPath(), [], $this->getBaseDir())
+            $this->getCache()->startDataCache(
+                $this->getTime(),
+                $this->getId(),
+                $this->getPath(),
+                [],
+                $this->getBaseDir()
+            )
             || $this->isClearCache()
         ) {
             $this->startTagCache();
 
             try {
 
-                $result = ($this->callback)();
+                $callback = $this->callback;
+                $result = $callback();
 
             } catch (Exception $exception) {
 
@@ -114,6 +160,7 @@ class BitrixCache
 
             if (is_null($result)) {
                 $this->abortCache();
+
                 return ['result' => $result];
             }
 
@@ -132,6 +179,61 @@ class BitrixCache
     }
 
     /**
+     * @throws SystemException
+     * @throws Exception
+     * @return mixed
+     */
+    protected function executeCallback()
+    {
+        if (
+            $this->getCache()->startDataCache(
+                $this->getTime(),
+                $this->getId(),
+                $this->getPath(),
+                [],
+                $this->getBaseDir()
+            )
+            || $this->isClearCache()
+        ) {
+            $this->startTagCache();
+
+            try {
+
+                $callback = $this->callback;
+                $result = $callback();
+                if (is_null($result)) {
+                    $this->abortCache();
+
+                    return null;
+                }
+
+            } catch (Exception $exception) {
+
+                $this->abortCache();
+                throw $exception;
+            }
+
+            $this->getCache()->endDataCache([self::RESULT_KEY => $result]);
+            $this->endTagCache();
+
+            return $result;
+
+        } else {
+            $vars = $this->getCache()->getVars();
+            if (!array_key_exists(self::RESULT_KEY, $vars)) {
+                throw new UnexpectedValueException(
+                    sprintf(
+                        'Cache is valid, but result is not found at key `%s`.',
+                        self::RESULT_KEY
+                    )
+                );
+            }
+
+            return $vars[self::RESULT_KEY];
+        }
+    }
+
+    /**
      * @return bool
      */
     public function isClearCache()
@@ -143,8 +245,20 @@ class BitrixCache
      * @param boolean $clearCache
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see setClearCache()
      */
     public function withClearCache($clearCache)
+    {
+        return $this->setClearCache($clearCache);
+    }
+
+    /**
+     * @param boolean $clearCache
+     *
+     * @return $this
+     */
+    public function setClearCache($clearCache)
     {
         $this->clearCache = (bool)$clearCache;
 
@@ -163,8 +277,20 @@ class BitrixCache
      * @param string $tag
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see setTag()
      */
     public function withTag($tag)
+    {
+        return $this->setTag($tag);
+    }
+
+    /**
+     * @param string $tag
+     *
+     * @return $this
+     */
+    public function setTag($tag)
     {
         $tag = trim($tag);
         if ($tag != '') {
@@ -178,8 +304,20 @@ class BitrixCache
      * @param int $iblockId
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see setIblockTag
      */
     public function withIblockTag($iblockId)
+    {
+        return $this->setIblockTag($iblockId);
+    }
+
+    /**
+     * @param int $iblockId
+     *
+     * @return $this
+     */
+    public function setIblockTag($iblockId)
     {
         if ($iblockId > 0) {
             $this->tags[] = 'iblock_id_' . (int)$iblockId;
@@ -200,8 +338,20 @@ class BitrixCache
      * @param int $time
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see setTime()
      */
     public function withTime($time)
+    {
+        return $this->setTime($time);
+    }
+
+    /**
+     * @param int $time
+     *
+     * @return $this
+     */
+    public function setTime($time)
     {
         $this->time = (int)$time;
 
@@ -220,8 +370,20 @@ class BitrixCache
      * @param string $id
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see setId()
      */
     public function withId($id)
+    {
+        return $this->setId($id);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return $this
+     */
+    public function setId($id)
     {
         $this->id = trim($id);
 
@@ -240,8 +402,20 @@ class BitrixCache
      * @param string $path
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see setPath()
      */
     public function withPath($path)
+    {
+        return $this->setPath($path);
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return $this
+     */
+    public function setPath($path)
     {
         $this->path = trim($path);
 
@@ -260,8 +434,20 @@ class BitrixCache
      * @param string $baseDir
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see setBaseDir()
      */
     public function withBaseDir($baseDir)
+    {
+        return $this->setBaseDir($baseDir);
+    }
+
+    /**
+     * @param string $baseDir
+     *
+     * @return $this
+     */
+    public function setBaseDir($baseDir)
     {
         $this->baseDir = $baseDir;
 
@@ -269,8 +455,8 @@ class BitrixCache
     }
 
     /**
+     * @throws SystemException
      * @return BitrixMainDataCache
-     * @throws \Bitrix\Main\SystemException
      */
     public function getCache()
     {
@@ -290,8 +476,8 @@ class BitrixCache
     }
 
     /**
+     * @throws SystemException
      * @return void
-     * @throws \Bitrix\Main\SystemException
      */
     protected function startTagCache()
     {
@@ -305,8 +491,8 @@ class BitrixCache
     }
 
     /**
+     * @throws SystemException
      * @return void
-     * @throws \Bitrix\Main\SystemException
      */
     protected function endTagCache()
     {
@@ -318,8 +504,8 @@ class BitrixCache
     /**
      * Отменяет запись кеша.
      *
+     * @throws SystemException
      * @return void
-     * @throws \Bitrix\Main\SystemException
      */
     public function abortCache()
     {

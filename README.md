@@ -10,18 +10,11 @@
 с необходимыми вам параметрами.  
 
 Учитывайте следующие особенные требования к замыканию: 
-  - eсли замыкание возвращает не `array`, то будет возвращён `array` вида `['result' => $callbackResult]`, 
-  где `$callbackResult` - значение, возвращённое замыканием;
     
   - если замыкание возвращает `null` запись кеша отменяется;
   
   - если замыкание выбрасывает любое исключение, запись кеша также отменяется, 
   но обработки исключения не происходит: вам следует самостоятельно его ловить;
-  
-  - в замыкание можно передать объект кеша `\WebArch\BitrixCache\BitrixCache`, 
-  чтобы внутри него появилась возможность отменять запись кеша методом 
-  `\WebArch\BitrixCache\BitrixCache::abortCache()` при более частных условиях;
-  
 
 ```
 
@@ -29,7 +22,7 @@ $callback = function () {
     return date(DATE_RSS);
 };
 
-$result = (new \WebArch\BitrixCache\BitrixCache())->resultOf($callback);
+$result = (new \WebArch\BitrixCache\BitrixCache())->callback($callback);
 
 var_dump($result);
 
@@ -52,17 +45,21 @@ $debug = false;
 $iblockId = 123;
 
 $result = (new \WebArch\BitrixCache\BitrixCache())
-    ->withTime(3600)
-    ->withId('foo')
-    ->withPath('/bar')
-    ->withClearCache($debug)
-    ->withTag('myTag')
-    ->withIblockTag($iblockId)
-    ->resultOf($callback);
+    ->setTime(3600)
+    ->setId('foo')
+    ->setPath('/bar')
+    ->setClearCache($debug)
+    ->setTag('myTag')
+    ->setIblockTag($iblockId)
+    ->callback($callback);
 
 var_dump($result);
 
 ```
+
+Может быть полезно: в замыкание можно передать объект кеша `\WebArch\BitrixCache\BitrixCache`, чтобы внутри него 
+появилась возможность отменять запись кеша методом `\WebArch\BitrixCache\BitrixCache::abortCache()` при более частных 
+условиях.
 
 Пример с отменой записи кеша: 
 
@@ -86,7 +83,7 @@ $callback = function () use ($productId, $bitrixCache) {
     return $productFields;
 };
 
-$result = $bitrixCache->resultOf($callback);
+$result = $bitrixCache->callback($callback);
 
 var_dump($result);
 
