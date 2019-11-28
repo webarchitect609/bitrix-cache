@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.2.0
+
+Добавлен метод очистки кеша \WebArch\BitrixCache\BitrixCache::clear(), который может использоваться для сброса кеша без
+необходимости вызывать \WebArch\BitrixCache\BitrixCache::callback().
+
 ## 1.1.0
 
 **Повышение удобства**

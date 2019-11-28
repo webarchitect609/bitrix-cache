@@ -1,4 +1,4 @@
-Удобная обёртка с fluent-интерфейсом для работы с кешем в Битрикс
+Удобная обёртка с fluent-интерфейсом для работы с кешем в Битрикс.
 
 Как использовать:
 
@@ -11,13 +11,11 @@
 
 Учитывайте следующие особенные требования к замыканию: 
     
-  - если замыкание возвращает `null` запись кеша отменяется;
+  - если замыкание возвращает `null` или выбрасывает любое исключение, запись кеша отменяется;
   
-  - если замыкание выбрасывает любое исключение, запись кеша также отменяется, 
-  но обработки исключения не происходит: вам следует самостоятельно его ловить;
+  - обработки возникшего в callback исключения не происходит: вам следует самостоятельно его ловить.
 
-```
-
+```php
 $callback = function () {
     return date(DATE_RSS);
 };
@@ -32,8 +30,7 @@ var_dump($result);
 
 Пример с более тщательной настройкой кеша: 
 
-```
-
+```php
 $callback = function () {
     return date(DATE_RSS);
 };
@@ -57,13 +54,13 @@ var_dump($result);
 
 ```
 
-Может быть полезно: в замыкание можно передать объект кеша `\WebArch\BitrixCache\BitrixCache`, чтобы внутри него 
-появилась возможность отменять запись кеша методом `\WebArch\BitrixCache\BitrixCache::abortCache()` при более частных 
+Также в замыкание можно передать объект кеша `\WebArch\BitrixCache\BitrixCache`, чтобы внутри него появилась
+возможность отменять запись кеша методом `\WebArch\BitrixCache\BitrixCache::abortCache()` при более частных 
 условиях.
 
 Пример с отменой записи кеша: 
 
-```
+```php
 $productId = 123;
 
 $bitrixCache = new \WebArch\BitrixCache\BitrixCache();
@@ -86,5 +83,22 @@ $callback = function () use ($productId, $bitrixCache) {
 $result = $bitrixCache->callback($callback);
 
 var_dump($result);
+
+```
+
+Если требуется только сбросить кеш, но не вызывать `$callback`, можно использовать метод
+`\WebArch\BitrixCache\BitrixCache::clear()`. 
+
+Пример с очисткой кеша:
+
+```php
+$cacheId = 'product123';
+$baseDir = '/';
+$path = '/foo/bar';
+
+(new \WebArch\BitrixCache\BitrixCache())->setId($cacheId)
+                                        ->setBaseDir($baseDir)
+                                        ->setPath($path)
+                                        ->clear();
 
 ```

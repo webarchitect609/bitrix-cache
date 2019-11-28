@@ -75,7 +75,7 @@ class BitrixCache
         $this->setDefaultParams();
 
         if ($this->isClearCache()) {
-            $this->getCache()->clean($this->getId(), $this->getPath(), $this->getBaseDir());
+            $this->clear();
         }
 
         return $this->execute();
@@ -84,13 +84,16 @@ class BitrixCache
     /**
      * Вызов callback, результат выполнения которого кешируется.
      *
-     * Если callback возвращает null или выбрасывает исключение, записи кеша не будет.
+     * Если callback возвращает null или выбрасывает исключение, записи кеша не будет. Если был установлен
+     * setClearCache(true), то перед вызовом $callback кеш будет очищен.
      *
      * @param callable $callback
      *
      * @throws ReflectionException
      * @throws Exception
      * @return mixed Закешированный результат выполнения $callback.
+     *
+     * @see setClearCache()
      */
     public function callback(callable $callback)
     {
@@ -98,7 +101,7 @@ class BitrixCache
         $this->setDefaultParams();
 
         if ($this->isClearCache()) {
-            $this->getCache()->clean($this->getId(), $this->getPath(), $this->getBaseDir());
+            $this->clear();
         }
 
         return $this->executeCallback();
@@ -254,9 +257,14 @@ class BitrixCache
     }
 
     /**
+     * Устанавливает признак необходимости очистки кеша при вызове метода callback() для принудительного обновления
+     * кеша.
+     *
      * @param boolean $clearCache
      *
      * @return $this
+     * @see callback()
+     * @see clear()
      */
     public function setClearCache($clearCache)
     {
@@ -513,5 +521,23 @@ class BitrixCache
         if ($this->hasTags()) {
             Application::getInstance()->getTaggedCache()->abortTagCache();
         }
+    }
+
+    /**
+     * Очищает кеш, параметры которого установлены методами setId(), setPath() и setBaseDir(), без вызова callback().
+     *
+     * @throws SystemException
+     * @return $this
+     */
+    public function clear()
+    {
+        $this->getCache()
+             ->clean(
+                 $this->getId(),
+                 $this->getPath(),
+                 $this->getBaseDir()
+             );
+
+        return $this;
     }
 }
