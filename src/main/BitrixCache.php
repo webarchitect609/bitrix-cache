@@ -8,7 +8,6 @@ use Bitrix\Main\SystemException;
 use Exception;
 use ReflectionException;
 use ReflectionFunction;
-use UnexpectedValueException;
 
 class BitrixCache
 {
@@ -224,12 +223,12 @@ class BitrixCache
         } else {
             $vars = $this->getCache()->getVars();
             if (!array_key_exists(self::RESULT_KEY, $vars)) {
-                throw new UnexpectedValueException(
-                    sprintf(
-                        'Cache is valid, but result is not found at key `%s`.',
-                        self::RESULT_KEY
-                    )
-                );
+                /**
+                 * Автоматическая перезапись кеша.
+                 * Такая ошибка произойдёт при переходе от resultOf() к callback().
+                 */
+                $this->clear();
+                return $this->executeCallback();
             }
 
             return $vars[self::RESULT_KEY];
