@@ -1,104 +1,249 @@
-Удобная обёртка с fluent-интерфейсом для работы с кешем в Битрикс.
+Битрикс Кеш
+===========
+[![Travis Build Status](https://travis-ci.org/webarchitect609/bitrix-cache.svg?branch=master)](https://travis-ci.org/webarchitect609/bitrix-cache)
+[![Latest version](https://img.shields.io/github/v/tag/webarchitect609/bitrix-cache?sort=semver)](https://github.com/webarchitect609/bitrix-cache/releases)
+[![Downloads](https://img.shields.io/packagist/dt/webarchitect609/bitrix-cache)](https://packagist.org/packages/webarchitect609/bitrix-cache)
+[![PHP version](https://img.shields.io/packagist/php-v/webarchitect609/bitrix-cache)](https://www.php.net/supported-versions.php)
+[![License](https://img.shields.io/github/license/webarchitect609/bitrix-cache)](LICENSE.md)
+[![More stuff from me](https://img.shields.io/badge/packagist-webarchitect609-blueviolet)](https://packagist.org/packages/webarchitect609/)
 
-Как использовать:
+Удобная обёртка для работы с кешем в Битрикс через fluent interface или по
+[PSR-16](https://www.php-fig.org/psr/psr-16/).
 
-1 Установите через composer
+Возможности
+-----------
+Основное назначение этой библиотеки - **максимальное ускорение** написания кода, требующего использования кеширования.
+- запись, чтение, валидация и удаление закешированной информации через fluent interface с поддержкой всех
+    Битрикс-специфичных параметров:
+    - baseDir
+    - path
+    - [тегированный кеш](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2978&LESSON_PATH=3913.4565.4780.2978)
+    (в том числе теги [инфоблоков](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&CHAPTER_ID=04610&LESSON_PATH=3913.4610))
+- кеширование результата выполнения [замыкания](https://www.php.net/manual/ru/functions.anonymous.php)
+- поддержка интерфейса `Psr\SimpleCache\CacheInterface` по
+    [PSR-16: Common Interface for Caching Libraries](https://www.php-fig.org/psr/psr-16/) 
 
-`composer require webarchitect609/bitrix-cache`
+Под "капотом" **только** `Bitrix\Main\Data\Cache` и `Bitrix\Main\Data\TaggedCache` из
+[ядра D7](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&CHAPTER_ID=05062&LESSON_PATH=3913.5062).
 
-2 Создайте замыкание, результат которого вы хотите кешировать, а потом оберните его в BitrixCache 
-с необходимыми вам параметрами.  
+Установка
+---------
+1. Установить через [composer](https://getcomposer.org/):
 
-Учитывайте следующие особенные требования к замыканию: 
+    ```bash
+    composer require webarchitect609/bitrix-cache
+    ```
+2. Добавить подключение [автозагрузчика](https://getcomposer.org/doc/01-basic-usage.md#autoloading) composer в самое
+начало [файла init.php](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2916&LESSON_PATH=3913.4776.2916)
     
-  - если замыкание возвращает `null` или выбрасывает любое исключение, запись кеша отменяется;
-  
-  - обработки возникшего в callback исключения не происходит: вам следует самостоятельно его ловить.
+   ```php
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/../../vendor/autoload.php';
+    ```
 
-```php
-$callback = function () {
-    return date(DATE_RSS);
-};
+Использование
+-------------
+1. Для ленивых и торопливых:
 
-$result = (new \WebArch\BitrixCache\BitrixCache())->callback($callback);
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    $result = Cache::create()
+                   ->callback(
+                       function () {
+                           /**
+                            * Результат выполнения кода здесь
+                            * кешируется на 1 час.
+                            */
+                           return date(DATE_ISO8601);
+                       }
+                   );
+    ```
 
-var_dump($result);
+2. Кеширование с использованием [замыкания](https://www.php.net/manual/ru/functions.anonymous.php).
 
-```
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    $result = Cache::create()
+                   ->setPath('/myPath')
+                   ->setKey('myKey')
+                   ->setTTL(60)
+                   ->callback(
+                       function () {
+                           /**
+                            * Результат выполнения этого
+                            * замыкания кешируется.
+                            */
+                           return date(DATE_ISO8601);
+                       }
+                   );
+    ```
 
-Теперь повторное исполнение этого кода кешируется и `$callback` вызовется только один раз. 
+3. Сброс кеша по key.
+    
+    Для очистки кеша из предыдущего примера необохдимо вызвать метод `delete(string $key)`, предварительно установив
+    `path` и `baseDir` соответствующие ранее созданному кешу(по умолчанию `baseDir === 'cache'`).
 
-Пример с более тщательной настройкой кеша: 
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    Cache::create()
+         ->setPath('/myPath')
+         ->delete('myKey');
+    ```
+4. Запись тегированного кеша.
+    
+    Кеш по пути `/myPath` будет снабжён двумя тегами: `myTag` и тегом инфоблока `iblock_id_1`.
 
-```php
-$callback = function () {
-    return date(DATE_RSS);
-};
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    $result = Cache::create()
+                   ->setPath('/myPath')
+                   ->addTag('myTag')
+                   ->addIblockTag(1)
+                   ->callback(
+                       function () {
+                           return date(DATE_ISO8601);
+                       }
+                   );
+    ```
+5. Удаление тегированного кеша.
+    
+    Кеш из предыдущего примера может быть очищен по тегу. Важно, что при очистке по тегу не требуется устанавливать
+    никакие другие параметры.
+   
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    Cache::create()
+         ->clearByTag('myTag'); 
+    ```
+   
+6. Использование всех возможностей fluent-интерфейса.
 
-//Если $debug == true, то кеш сбрасывается и перезаписывается при каждом вызове $callback
-$debug = false;
+    В результате запись ведётся не в папку `cache`, а в папку `myBaseDir` по пути `/myPath` с ключом `myKey` на 60
+    секунд и только с тегом `TheOnlyTag`, т.к. все предыдущие теги были сброшены вызовом `clearTags()`
 
-//ID инфоблока
-$iblockId = 123;
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    $result = Cache::create()
+                   ->setBaseDir('myBaseDir')
+                   ->setPath('/myPath')
+                   ->setKey('myKey')
+                   ->setTTL(60)
+                   ->addIblockTag(2)
+                   ->addTag('myTagOne')
+                   ->addTag('myTagTwo')
+                   ->clearTags()
+                   ->addTag('TheOnlyTag')
+                   ->callback(
+                       function () {
+                           return date(DATE_ISO8601);
+                       }
+                   );
+    ```
 
-$result = (new \WebArch\BitrixCache\BitrixCache())
-    ->setTime(3600)
-    ->setId('foo')
-    ->setPath('/bar')
-    ->setClearCache($debug)
-    ->setTag('myTag')
-    ->setIblockTag($iblockId)
-    ->callback($callback);
+7. Отмена записи кеша в момент исполнения замыкания.
+    
+    Метод `abort()` используется для предотвращения записи кеша вне зависимости от того, что вернёт замыкание.
+    
+    ```php
+    use WebArch\BitrixCache\Cache;
+        
+    $cache = Cache::create();
+    $result = $cache->callback(
+                        function () use ($cache) {
+                            /**
+                             * Например, API вернул ответ, что товар не найден.
+                             */
+                            $productNotFound = true;
+                            if($productNotFound){
+                                $cache->abort();
+                            }
 
-var_dump($result);
+                            return date(DATE_ISO8601);
+                        }
+                    );
+    ```
 
-```
+8. Задание TTL в виде интервала `DateInterval`.
+    
+    В результате значение будет закешировано на 1 месяц и 15 минут.
+    
+    ```php
+    use WebArch\BitrixCache\Cache;
+   
+    $result = Cache::create()
+                   ->setTTLInterval(new DateInterval('P1MT15M'))
+                   ->callback(
+                       function () {
+                           return date(DATE_ISO8601);
+                       }
+                   );
+   ;
+    ```
 
-Также в замыкание можно передать объект кеша `\WebArch\BitrixCache\BitrixCache`, чтобы внутри него появилась
-возможность отменять запись кеша методом `\WebArch\BitrixCache\BitrixCache::abortCache()` при более частных 
-условиях.
+9. Задание TTL к заданному времени.
+    
+    В результате значение будет закешировано до 31 декабря 2020. Но если указанная дата и время уже прошли, будет
+    ошибка. Метод полезен, чтобы, например, задавать время жизни кеша по дате окончания активности. 
+    
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    Cache::create()
+         ->setExpirationTime(new DateTimeImmutable('2020-12-30T23:59:59', new DateTimeZone('+03:00')))
+         ->set('myKey', 'someValue');
+    ```
+   
+10. Использование [PSR-16](https://www.php-fig.org/psr/psr-16/).
+    
+    Все методы по PSR-16 работают **только** внутри указанных `baseDir` и `path`. Т.е. вызов `clear()` **не очистит**
+    полностью весь кеш Битрикс.
 
-Пример с отменой записи кеша: 
+   ```php
+   use WebArch\BitrixCache\Cache;
+   
+   $cache = Cache::create()
+                 ->setBaseDir('myBaseDir')
+                 ->setPath('/myPath');
+   
+   $cache->set('myKey', 'myValue', 86400);
+   $result = $cache->get('myKey', 'defaultValue');
+   $cache->delete('myKey');
+   $cache->clear();
+   $cache->setMultiple(
+       [
+           'key1' => 'value1',
+           'key2' => 'value2',
+       ]
+   );
+   $multipleResult = $cache->getMultiple(['key1', 'key2', 'key3'], 'defaultValueForMissingMultiple');
+   $cache->deleteMultiple(['key1', 'key2', 'key3', 'key4']);
+   /**
+    * Внимание! Этот метод можно использовать только для прогрева кеша. См. примечание к методу.
+    */
+   $cache->has('key2');
+   ```
 
-```php
-$productId = 123;
+Известные особенности
+---------------------
 
-$bitrixCache = new \WebArch\BitrixCache\BitrixCache();
+### Очистка кеша
 
-$callback = function () use ($productId, $bitrixCache) {
+Метод `\WebArch\BitrixCache\Cache::clear()` очищает кеш **только** внутри `$baseDir` и подкаталога `$path`. Эти
+параметры относятся только к Битрикс и никак не описаны в [PSR-16](https://www.php-fig.org/psr/psr-16/).
 
-    $productFields = (new ProductQuery())->setFilterParameter('=ID', $productId)
-                                         ->exec()
-                                         ->current();
-    /**
-     * Отменить запись кеша, если продукт не найден
-     */
-    if (!$productFields) {
-        $bitrixCache->abortCache();
-    }
+### Перезапись кеша
 
-    return $productFields;
-};
+Из-за того, что в `\Bitrix\Main\Data\Cache` не существует атомарного метода перезаписи кеша, может возникнуть состояние
+гонки, когда после вызова `\Bitrix\Main\Data\Cache::clean()` и до вызова `\Bitrix\Main\Data\Cache::startDataCache()`
+другой скрипт успевает записать кеш. Для максимального снижения вероятности такой ситуации выполняются многократные
+попытки перезаписи кеша, однако результат не гарантируется.
 
-$result = $bitrixCache->callback($callback);
+Лицензия и информация об авторах
+--------------------------------
 
-var_dump($result);
-
-```
-
-Если требуется только сбросить кеш, но не вызывать `$callback`, можно использовать метод
-`\WebArch\BitrixCache\BitrixCache::clear()`. 
-
-Пример с очисткой кеша:
-
-```php
-$cacheId = 'product123';
-$baseDir = '/';
-$path = '/foo/bar';
-
-(new \WebArch\BitrixCache\BitrixCache())->setId($cacheId)
-                                        ->setBaseDir($baseDir)
-                                        ->setPath($path)
-                                        ->clear();
-
-```
+[BSD-3-Clause](LICENSE.md)

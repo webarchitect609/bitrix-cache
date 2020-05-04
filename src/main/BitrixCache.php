@@ -9,6 +9,12 @@ use Exception;
 use ReflectionException;
 use ReflectionFunction;
 
+/**
+ * Class BitrixCache
+ * @package WebArch\BitrixCache
+ * @deprecated Будет удалён в версии 2.0
+ * @see \WebArch\BitrixCache\Cache
+ */
 class BitrixCache
 {
     /**
@@ -65,7 +71,7 @@ class BitrixCache
      * @return array Если callback возвращает не array, то будет возвращён array вида ['result' => $callbackResult]
      *
      * @deprecated Будет удалён в версии 2.0
-     * @see callback()
+     * @see \WebArch\BitrixCache\Cache::callback()
      *
      */
     public function resultOf(callable $callback)
@@ -92,7 +98,8 @@ class BitrixCache
      * @throws Exception
      * @return mixed Закешированный результат выполнения $callback.
      *
-     * @see setClearCache()
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::callback()
      */
     public function callback(callable $callback)
     {
@@ -228,6 +235,7 @@ class BitrixCache
                  * Такая ошибка произойдёт при переходе от resultOf() к callback().
                  */
                 $this->clear();
+
                 return $this->executeCallback();
             }
 
@@ -237,6 +245,8 @@ class BitrixCache
 
     /**
      * @return bool
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::delete()
      */
     public function isClearCache()
     {
@@ -248,7 +258,7 @@ class BitrixCache
      *
      * @return $this
      * @deprecated Будет удалён в версии 2.0
-     * @see setClearCache()
+     * @see \WebArch\BitrixCache\Cache::delete()
      */
     public function withClearCache($clearCache)
     {
@@ -262,8 +272,8 @@ class BitrixCache
      * @param boolean $clearCache
      *
      * @return $this
-     * @see callback()
-     * @see clear()
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::delete()
      */
     public function setClearCache($clearCache)
     {
@@ -274,6 +284,8 @@ class BitrixCache
 
     /**
      * @return void
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::clearTags()
      */
     public function clearTags()
     {
@@ -285,7 +297,7 @@ class BitrixCache
      *
      * @return $this
      * @deprecated Будет удалён в версии 2.0
-     * @see setTag()
+     * @see \WebArch\BitrixCache\Cache::addTag()
      */
     public function withTag($tag)
     {
@@ -296,6 +308,8 @@ class BitrixCache
      * @param string $tag
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::addTag()
      */
     public function setTag($tag)
     {
@@ -312,7 +326,7 @@ class BitrixCache
      *
      * @return $this
      * @deprecated Будет удалён в версии 2.0
-     * @see setIblockTag
+     * @see \WebArch\BitrixCache\Cache::addIblockTag()
      */
     public function withIblockTag($iblockId)
     {
@@ -323,6 +337,8 @@ class BitrixCache
      * @param int $iblockId
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::addIblockTag()
      */
     public function setIblockTag($iblockId)
     {
@@ -335,6 +351,8 @@ class BitrixCache
 
     /**
      * @return int
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::getTTL()
      */
     public function getTime()
     {
@@ -346,7 +364,9 @@ class BitrixCache
      *
      * @return $this
      * @deprecated Будет удалён в версии 2.0
-     * @see setTime()
+     * @see \WebArch\BitrixCache\Cache::setTTL()
+     * @see \WebArch\BitrixCache\Cache::setTTLInterval()
+     * @see \WebArch\BitrixCache\Cache::setExpirationTime()
      */
     public function withTime($time)
     {
@@ -357,6 +377,10 @@ class BitrixCache
      * @param int $time
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::setTTL()
+     * @see \WebArch\BitrixCache\Cache::setTTLInterval()
+     * @see \WebArch\BitrixCache\Cache::setExpirationTime()
      */
     public function setTime($time)
     {
@@ -367,6 +391,8 @@ class BitrixCache
 
     /**
      * @return string
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::getKey()
      */
     public function getId()
     {
@@ -378,7 +404,7 @@ class BitrixCache
      *
      * @return $this
      * @deprecated Будет удалён в версии 2.0
-     * @see setId()
+     * @see \WebArch\BitrixCache\Cache::setKey()
      */
     public function withId($id)
     {
@@ -389,6 +415,8 @@ class BitrixCache
      * @param string $id
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::setKey()
      */
     public function setId($id)
     {
@@ -399,6 +427,8 @@ class BitrixCache
 
     /**
      * @return string
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::getPath()
      */
     public function getPath()
     {
@@ -410,7 +440,7 @@ class BitrixCache
      *
      * @return $this
      * @deprecated Будет удалён в версии 2.0
-     * @see setPath()
+     * @see \WebArch\BitrixCache\Cache::setPath()
      */
     public function withPath($path)
     {
@@ -421,6 +451,8 @@ class BitrixCache
      * @param string $path
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::setPath()
      */
     public function setPath($path)
     {
@@ -431,6 +463,8 @@ class BitrixCache
 
     /**
      * @return string
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::getBaseDir()
      */
     public function getBaseDir()
     {
@@ -442,7 +476,7 @@ class BitrixCache
      *
      * @return $this
      * @deprecated Будет удалён в версии 2.0
-     * @see setBaseDir()
+     * @see \WebArch\BitrixCache\Cache::setBaseDir()
      */
     public function withBaseDir($baseDir)
     {
@@ -453,6 +487,8 @@ class BitrixCache
      * @param string $baseDir
      *
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::setBaseDir()
      */
     public function setBaseDir($baseDir)
     {
@@ -464,6 +500,8 @@ class BitrixCache
     /**
      * @throws SystemException
      * @return BitrixMainDataCache
+     * @deprecated Будет удалён в версии 2.0
+     * @see \Bitrix\Main\Application::getCache()
      */
     public function getCache()
     {
@@ -476,6 +514,8 @@ class BitrixCache
 
     /**
      * @return bool
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::hasTags()
      */
     public function hasTags()
     {
@@ -513,6 +553,8 @@ class BitrixCache
      *
      * @throws SystemException
      * @return void
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::abort()
      */
     public function abortCache()
     {
@@ -527,6 +569,8 @@ class BitrixCache
      *
      * @throws SystemException
      * @return $this
+     * @deprecated Будет удалён в версии 2.0
+     * @see \WebArch\BitrixCache\Cache::delete()
      */
     public function clear()
     {

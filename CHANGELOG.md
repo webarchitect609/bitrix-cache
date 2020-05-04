@@ -1,5 +1,27 @@
 # Change Log
 
+## 1.4.0
+
+### Добавлено:
+- Новая версия работы с кешем `\WebArch\BitrixCache\Cache`, которая используется на версии 2.0. Подробнее 
+    смотрите в [инструкции по обновлению](UPGRADING.md)
+- 100% покрытие `\WebArch\BitrixCache\Cache` Unit-тестами
+- Добавлена поддержка PHP Coding Standards Fixer с интеграцией с PhpStorm
+
+### Изменено:
+- Лицензионное соглашение изменено на [BSD-3-Clause](LICENSE.md)
+
+### Устарело:
+- Класс `\WebArch\BitrixCache\BitrixCache` помечен полностью устаревшим и будет удалён в версии 2.0. Подробнее
+    смотрите в [инструкции по обновлению](UPGRADING.md)
+
+### Удалено:
+- PHP ^5.5 и <= 7.1 больше не поддерживаются
+
+### Безопасность:
+- Добавлено использование [Roave Security Advisories](https://packagist.org/packages/roave/security-advisories)
+
+
 ## 1.3.0
 
 Вместо исключения UnexpectedValueException в executeCallback() и невозможности из-за этого очистить кеш через

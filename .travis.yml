@@ -1,0 +1,20 @@
+---
+os: linux
+dist: bionic
+
+language: php
+php:
+  - 7.2
+  - 7.3
+  - 7.4
+
+git:
+  depth: 3
+  quiet: true
+
+before_script:
+  - (composer self-update; true)
+  - composer install --no-progress --no-suggest --no-interaction --no-cache
+
+script:
+  - composer test
