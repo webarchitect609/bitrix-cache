@@ -2,10 +2,6 @@
 
 namespace WebArch\BitrixCache\Test\Fixture;
 
-use Bitrix\Main\Application;
-use Bitrix\Main\Data\Cache as BitrixCache;
-use Bitrix\Main\Data\TaggedCache as BitrixTaggedCache;
-use Bitrix\Main\SystemException;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +11,12 @@ use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionProperty;
 use WebArch\BitrixCache\Cache;
+use WebArch\BitrixTaxidermist\Mock\Bitrix\Main\Application;
+use WebArch\BitrixTaxidermist\Mock\Bitrix\Main\Data\Cache as BitrixCache;
+use WebArch\BitrixTaxidermist\Mock\Bitrix\Main\Data\TaggedCache as BitrixTaggedCache;
+use WebArch\BitrixTaxidermist\Mock\Bitrix\Main\HttpApplication;
+use WebArch\BitrixTaxidermist\Mock\Bitrix\Main\SystemException;
+use WebArch\BitrixTaxidermist\Taxidermist;
 
 class CacheFixture extends TestCase
 {
@@ -74,6 +76,27 @@ class CacheFixture extends TestCase
      */
     protected $bitrixApplication;
 
+    /**
+     * @inheritDoc
+     */
+    public static function setUpBeforeClass(): void
+    {
+        $mocks = [
+            SystemException::class,
+            Application::class,
+            HttpApplication::class,
+            BitrixCache::class,
+            BitrixTaggedCache::class,
+        ];
+        foreach ($mocks as $mock) {
+            Taxidermist::taxidermize($mock);
+        }
+        /**
+         * Приготовить объект, чтобы дальше все Application::getInstance() срабатывали.
+         */
+        HttpApplication::getInstance();
+    }
+
     protected function mockBitrixCache(): void
     {
         $this->bitrixCache = $this->getMockBuilder(BitrixCache::class)
@@ -109,6 +132,7 @@ class CacheFixture extends TestCase
     protected function mockBitrixApplication()
     {
         $this->bitrixApplication = $this->getMockBuilder(Application::class)
+                                        ->disableOriginalConstructor()
                                         ->onlyMethods(
                                             [
                                                 'getTaggedCache',
