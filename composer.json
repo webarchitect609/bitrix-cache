@@ -29,7 +29,7 @@
     "friendsofphp/php-cs-fixer": "^2.16",
     "phpunit/phpunit": "^8.5",
     "roave/security-advisories": "dev-master",
-    "webarchitect609/bitrix-taxidermist": "^0.0.2"
+    "webarchitect609/bitrix-taxidermist": "^0.1"
   },
   "autoload": {
     "psr-4": {

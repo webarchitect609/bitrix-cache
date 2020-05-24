@@ -81,21 +81,13 @@ class CacheFixture extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        $mocks = [
-            SystemException::class,
-            Application::class,
-            HttpApplication::class,
-            BitrixCache::class,
-            BitrixTaggedCache::class,
-        ];
-        foreach ($mocks as $mock) {
-            Taxidermist::taxidermize($mock);
-        }
+        (new Taxidermist())->taxidermizeAll();
         /**
          * Приготовить объект, чтобы дальше все Application::getInstance() срабатывали.
          */
         HttpApplication::getInstance();
     }
+
 
     protected function mockBitrixCache(): void
     {

@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.4.2
+
+### Изменено:
+- Обновление `webarchitect609/bitrix-taxidermist` до `^0.1` 
+
 ## 1.4.1
 
 ### Изменено:
