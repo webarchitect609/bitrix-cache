@@ -36,7 +36,7 @@
 2. Добавить подключение [автозагрузчика](https://getcomposer.org/doc/01-basic-usage.md#autoloading) composer в самое
 начало [файла init.php](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2916&LESSON_PATH=3913.4776.2916)
     
-   ```php
+    ```php
     require_once $_SERVER['DOCUMENT_ROOT'] . '/../../vendor/autoload.php';
     ```
 
@@ -182,7 +182,6 @@
                            return date(DATE_ISO8601);
                        }
                    );
-   ;
     ```
 
 9. Задание TTL к заданному времени.
@@ -197,36 +196,36 @@
          ->setExpirationTime(new DateTimeImmutable('2020-12-30T23:59:59', new DateTimeZone('+03:00')))
          ->set('myKey', 'someValue');
     ```
-   
+
 10. Использование [PSR-16](https://www.php-fig.org/psr/psr-16/).
-    
+
     Все методы по PSR-16 работают **только** внутри указанных `baseDir` и `path`. Т.е. вызов `clear()` **не очистит**
     полностью весь кеш Битрикс.
 
-   ```php
-   use WebArch\BitrixCache\Cache;
-   
-   $cache = Cache::create()
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    $cache = Cache::create()
                  ->setBaseDir('myBaseDir')
                  ->setPath('/myPath');
-   
-   $cache->set('myKey', 'myValue', 86400);
-   $result = $cache->get('myKey', 'defaultValue');
-   $cache->delete('myKey');
-   $cache->clear();
-   $cache->setMultiple(
+    
+    $cache->set('myKey', 'myValue', 86400);
+    $result = $cache->get('myKey', 'defaultValue');
+    $cache->delete('myKey');
+    $cache->clear();
+    $cache->setMultiple(
        [
            'key1' => 'value1',
            'key2' => 'value2',
        ]
-   );
-   $multipleResult = $cache->getMultiple(['key1', 'key2', 'key3'], 'defaultValueForMissingMultiple');
-   $cache->deleteMultiple(['key1', 'key2', 'key3', 'key4']);
-   /**
+    );
+    $multipleResult = $cache->getMultiple(['key1', 'key2', 'key3'], 'defaultValueForMissingMultiple');
+    $cache->deleteMultiple(['key1', 'key2', 'key3', 'key4']);
+    /**
     * Внимание! Этот метод можно использовать только для прогрева кеша. См. примечание к методу.
     */
-   $cache->has('key2');
-   ```
+    $cache->has('key2');
+    ```
 
 Известные особенности
 ---------------------

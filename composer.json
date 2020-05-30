@@ -27,6 +27,7 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.16",
+    "phpstan/phpstan": "^0.12.25",
     "phpunit/phpunit": "^8.5",
     "roave/security-advisories": "dev-master",
     "webarchitect609/bitrix-taxidermist": "^0.1"
@@ -42,12 +43,16 @@
     }
   },
   "scripts": {
+    "check:analyse": "vendor/bin/phpstan analyse --ansi --no-progress",
+    "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff",
     "check:security": "@composer update --dry-run roave/security-advisories",
-    "test": "vendor/bin/phpunit"
+    "check:test": "vendor/bin/phpunit"
   },
   "scripts-descriptions": {
-    "check:security": "Manual security check via roave/security-advisories",
-    "test": "Run all UnitTests."
+    "check:analyse": "Static code anaysis via PHPStan",
+    "check:code-style": "Check the code style.",
+    "check:security": "Manual dependencies security check via roave/security-advisories.",
+    "check:test": "Run all UnitTests."
   },
   "config": {
     "sort-packages": true

@@ -67,7 +67,7 @@ class CacheFixture extends TestCase
     protected $defaultValue = 'This is the default value.';
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected $multipleKeys;
 
@@ -121,7 +121,10 @@ class CacheFixture extends TestCase
                                         ->getMock();
     }
 
-    protected function mockBitrixApplication()
+    /**
+     * @return void
+     */
+    protected function mockBitrixApplication(): void
     {
         $this->bitrixApplication = $this->getMockBuilder(Application::class)
                                         ->disableOriginalConstructor()
@@ -183,7 +186,10 @@ class CacheFixture extends TestCase
                                 ->method('endTagCache');
     }
 
-    protected function setUpBitrixCacheIsNeverCalled()
+    /**
+     * @return void
+     */
+    protected function setUpBitrixCacheIsNeverCalled(): void
     {
         $this->bitrixCache->expects($this->never())
                           ->method('initCache');
@@ -203,8 +209,9 @@ class CacheFixture extends TestCase
 
     /**
      * @throws ReflectionException
+     * @return void
      */
-    protected function setUpCallbackKey()
+    protected function setUpCallbackKey(): void
     {
         $ref = new ReflectionFunction($this->callback);
         $this->callbackKey = md5($ref->getFileName() . $ref->getStartLine() . $ref->getEndLine());
@@ -223,7 +230,10 @@ class CacheFixture extends TestCase
         $setMixedTTLReflectionMethod->invoke($this->cache, $mixedTTL);
     }
 
-    protected function setUpBitrixApplicationToThrowSystemException()
+    /**
+     * @return void
+     */
+    protected function setUpBitrixApplicationToThrowSystemException(): void
     {
         $this->mockBitrixApplication();
         $bitrixApplicationProperty = new ReflectionProperty(Cache::class, 'bitrixApplication');
@@ -237,6 +247,5 @@ class CacheFixture extends TestCase
         $this->bitrixApplication->expects($this->any())
                                 ->method('getTaggedCache')
                                 ->willThrowException($exception);
-
     }
 }

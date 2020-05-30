@@ -69,22 +69,22 @@ class Cache implements CacheInterface
     private $baseDir = self::DEFAULT_BASE_DIR;
 
     /**
-     * @var array Теги кеша.
+     * @var array<string> Теги кеша.
      */
     private $tags = [];
 
     /**
-     * @var BitrixCache
+     * @var null|BitrixCache
      */
     private static $bitrixCache;
 
     /**
-     * @var BitrixTaggedCache
+     * @var null|BitrixTaggedCache
      */
     private static $bitrixTaggedCache;
 
     /**
-     * @var Application
+     * @var null|Application
      */
     private static $bitrixApplication;
 
@@ -95,7 +95,7 @@ class Cache implements CacheInterface
      */
     public static function create(): Cache
     {
-        return new static();
+        return new self();
     }
 
     /**
@@ -283,11 +283,11 @@ class Cache implements CacheInterface
     /**
      * Возвращает множество кешированных значений по множеству уникальных идентификаторов.
      *
-     * @param array $keys Множество уникальных идентификаторов.
-     * @param null $default Значение по умолчанию, которое будет возвращено, если значение отсутствует в кеше.
+     * @param array<string> $keys Множество уникальных идентификаторов.
+     * @param null|mixed $default Значение по умолчанию, которое будет возвращено, если значение отсутствует в кеше.
      *
      * @throws InvalidArgumentException
-     * @return array
+     * @return array<mixed>
      */
     public function getMultiple($keys, $default = null)
     {
@@ -304,7 +304,7 @@ class Cache implements CacheInterface
     /**
      * Сохраняет множество пар ключ => значение в кеше с необязательным параметром времени жизни.
      *
-     * @param array $values Множество пар ключ => значение.
+     * @param array<string, mixed> $values Множество пар ключ => значение.
      * @param null|DateInterval|int $ttl Необязательный параметр. Время жизни кешируемого значения. Если не передан,
      *     используется значение по умолчанию.
      *
@@ -325,7 +325,7 @@ class Cache implements CacheInterface
     /**
      * Удаляет множество закешированных значений.
      *
-     * @param array $keys Множество уникальных идентификаторов.
+     * @param array<string> $keys Множество уникальных идентификаторов.
      *
      * @throws InvalidArgumentException
      * @return bool true в случае успеха или false в случае неудачи удаления хотя бы одного из ключей.
@@ -626,7 +626,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * @param $ttl
+     * @param null|DateInterval|int $ttl
      *
      * @return $this
      */
@@ -677,7 +677,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * @param array $keys
+     * @param array<string> $keys
      *
      * @param string $name
      *
@@ -809,8 +809,10 @@ class Cache implements CacheInterface
 
     /**
      * @param int $iblockId
+     *
+     * @return void
      */
-    private function assertIblockId(int $iblockId)
+    private function assertIblockId(int $iblockId): void
     {
         if ($iblockId <= 0) {
             throw new InvalidArgumentException(

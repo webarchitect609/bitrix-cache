@@ -1,20 +1,33 @@
 ---
 os: linux
 dist: bionic
-
 language: php
-php:
-  - 7.2
-  - 7.3
-  - 7.4
 
 git:
-  depth: 3
+  depth: 10
   quiet: true
 
-before_script:
-  - (composer self-update; true)
-  - composer install --no-progress --no-suggest --no-interaction --no-cache
-
-script:
-  - composer test
+jobs:
+  include:
+    - &STANDARD_TEST_JOB
+      stage: "Code style & static code analysis"
+      php: 7.2
+      install:
+        - (composer self-update; true)
+        - composer install --no-progress --no-suggest --no-interaction --no-cache
+      script:
+        - export TRAVIS_PULL_REQUEST TRAVIS_COMMIT_RANGE
+        - ./dev-tools/php-cs-check.sh
+        - composer check:analyse
+    - &STANDART_UNIT_TEST_JOB
+      <<: *STANDARD_TEST_JOB
+      stage: "Unit tests"
+      php: 7.2
+      script:
+        - composer check:test
+    -
+      <<: *STANDART_UNIT_TEST_JOB
+      php: 7.3
+    -
+      <<: *STANDART_UNIT_TEST_JOB
+      php: 7.4

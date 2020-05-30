@@ -23,7 +23,7 @@ class BitrixCache
     const RESULT_KEY = '24985a76-23ee-46d6-aab6-2dcbac7190f6';
 
     /**
-     * @var BitrixMainDataCache
+     * @var null|BitrixMainDataCache
      */
     private $cache;
 
@@ -48,7 +48,7 @@ class BitrixCache
     private $baseDir = 'cache';
 
     /**
-     * @var array
+     * @var array<string>
      */
     private $tags = [];
 
@@ -68,7 +68,7 @@ class BitrixCache
      * @param callable $callback Если callback возвращает null, записи кеша не будет.
      *
      * @throws Exception
-     * @return array Если callback возвращает не array, то будет возвращён array вида ['result' => $callbackResult]
+     * @return array<mixed> Если callback возвращает не array, то будет возвращён array вида ['result' => $callbackResult]
      *
      * @deprecated Будет удалён в версии 2.0
      * @see \WebArch\BitrixCache\Cache::callback()
@@ -135,7 +135,7 @@ class BitrixCache
 
     /**
      * @throws Exception
-     * @return array
+     * @return array<mixed>
      *
      * @deprecated Будет удалён в версии 2.0
      * @see executeCallback()
@@ -156,15 +156,11 @@ class BitrixCache
             $this->startTagCache();
 
             try {
-
                 $callback = $this->callback;
                 $result = $callback();
-
             } catch (Exception $exception) {
-
                 $this->abortCache();
                 throw $exception;
-
             }
 
             if (is_null($result)) {
@@ -181,10 +177,8 @@ class BitrixCache
             $this->endTagCache();
 
             return $result;
-
-        } else {
-            return $this->getCache()->getVars();
         }
+        return $this->getCache()->getVars();
     }
 
     /**
@@ -207,7 +201,6 @@ class BitrixCache
             $this->startTagCache();
 
             try {
-
                 $callback = $this->callback;
                 $result = $callback();
                 if (is_null($result)) {
@@ -215,9 +208,7 @@ class BitrixCache
 
                     return null;
                 }
-
             } catch (Exception $exception) {
-
                 $this->abortCache();
                 throw $exception;
             }
@@ -226,21 +217,19 @@ class BitrixCache
             $this->endTagCache();
 
             return $result;
-
-        } else {
-            $vars = $this->getCache()->getVars();
-            if (!array_key_exists(self::RESULT_KEY, $vars)) {
-                /**
-                 * Автоматическая перезапись кеша.
-                 * Такая ошибка произойдёт при переходе от resultOf() к callback().
-                 */
-                $this->clear();
-
-                return $this->executeCallback();
-            }
-
-            return $vars[self::RESULT_KEY];
         }
+        $vars = $this->getCache()->getVars();
+        if (!array_key_exists(self::RESULT_KEY, $vars)) {
+            /**
+             * Автоматическая перезапись кеша.
+             * Такая ошибка произойдёт при переходе от resultOf() к callback().
+             */
+            $this->clear();
+
+            return $this->executeCallback();
+        }
+
+        return $vars[self::RESULT_KEY];
     }
 
     /**

@@ -36,6 +36,9 @@ class CacheTest extends CacheFixture
         $this->setUpCallback();
     }
 
+    /**
+     * @return void
+     */
     public function testCreate()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -46,6 +49,7 @@ class CacheTest extends CacheFixture
 
     /**
      * @throws Throwable
+     * @return void
      */
     public function testCallbackMissesTheCache()
     {
@@ -90,6 +94,7 @@ class CacheTest extends CacheFixture
 
     /**
      * @throws Throwable
+     * @return void
      */
     public function testCallbackHitsTheCache()
     {
@@ -133,6 +138,7 @@ class CacheTest extends CacheFixture
 
     /**
      * @throws Throwable
+     * @return void
      */
     public function testCallbackReflectionFunctionFailsByType()
     {
@@ -146,6 +152,7 @@ class CacheTest extends CacheFixture
 
     /**
      * @throws Throwable
+     * @return void
      */
     public function testCallbackReflectionFunctionFailsByNonExistingFunction()
     {
@@ -163,6 +170,9 @@ class CacheTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testCallbackExceptionAbortsCacheIncludingTagged()
     {
         $this->bitrixCache->expects($this->once())
@@ -224,6 +234,9 @@ class CacheTest extends CacheFixture
                     );
     }
 
+    /**
+     * @return void
+     */
     public function testCallbackEncountersGetVarsError()
     {
         $this->setUpTaggedCacheIsNeverCalled();
@@ -270,6 +283,7 @@ class CacheTest extends CacheFixture
 
     /**
      * @throws Throwable
+     * @return void
      */
     public function testTaggedCache()
     {
@@ -335,6 +349,9 @@ class CacheTest extends CacheFixture
         $this->assertEquals($this->cachedValue, $callbackResult);
     }
 
+    /**
+     * @return void
+     */
     public function testClearByTag()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -354,6 +371,9 @@ class CacheTest extends CacheFixture
         $this->cache->clearByTag($tag);
     }
 
+    /**
+     * @return void
+     */
     public function testSetTTLGetTTL()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -375,6 +395,8 @@ class CacheTest extends CacheFixture
     /**
      * @param int $incorrectTTL
      *
+     * @return void
+     *
      * @dataProvider incorrectTTLDataProvider
      */
     public function testSetIncorrectTTL(int $incorrectTTL)
@@ -388,7 +410,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array|int[]
+     * @return array<string, array>
      */
     public function incorrectTTLDataProvider(): array
     {
@@ -398,6 +420,9 @@ class CacheTest extends CacheFixture
         ];
     }
 
+    /**
+     * @return void
+     */
     public function testSetTTLInterval()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -415,6 +440,9 @@ class CacheTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testSetTTLIntervalNegative()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -428,6 +456,9 @@ class CacheTest extends CacheFixture
         $this->cache->setTTLInterval($interval);
     }
 
+    /**
+     * @return void
+     */
     public function testSetExpirationTime()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -448,6 +479,8 @@ class CacheTest extends CacheFixture
     /**
      * @param DateTimeImmutable $expirationTime
      *
+     * @return void
+     *
      * @dataProvider incorrectExpirationTimeDataProvider
      */
     public function testSetExpirationTimeFromThePast(DateTimeImmutable $expirationTime)
@@ -461,7 +494,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array
+     * @return array<array>
      */
     public function incorrectExpirationTimeDataProvider(): array
     {
@@ -471,6 +504,9 @@ class CacheTest extends CacheFixture
         ];
     }
 
+    /**
+     * @return void
+     */
     public function testSetEmptyKey()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -481,6 +517,9 @@ class CacheTest extends CacheFixture
         $this->cache->setKey('');
     }
 
+    /**
+     * @return void
+     */
     public function testSetPath()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -495,6 +534,9 @@ class CacheTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testSetEmptyPath()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -505,6 +547,9 @@ class CacheTest extends CacheFixture
         $this->cache->setPath('');
     }
 
+    /**
+     * @return void
+     */
     public function testSetPathStartingWithNonSlash()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -515,6 +560,9 @@ class CacheTest extends CacheFixture
         $this->cache->setPath('foo/');
     }
 
+    /**
+     * @return void
+     */
     public function testSetPathEndingWithSlash()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -525,6 +573,9 @@ class CacheTest extends CacheFixture
         $this->cache->setPath('/foo/');
     }
 
+    /**
+     * @return void
+     */
     public function testSetBaseDir()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -543,6 +594,9 @@ class CacheTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testSetEmptyBaseDir()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -555,6 +609,8 @@ class CacheTest extends CacheFixture
 
     /**
      * @param string $incorrectBaseDir
+     *
+     * @return void
      *
      * @dataProvider incorrectBaseDirDataProvider
      */
@@ -569,7 +625,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array|string[]
+     * @return array<array>
      */
     public function incorrectBaseDirDataProvider(): array
     {
@@ -583,6 +639,7 @@ class CacheTest extends CacheFixture
 
     /**
      * @throws ReflectionException
+     * @return void
      */
     public function testTags()
     {
@@ -618,6 +675,9 @@ class CacheTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testAddEmptyTag()
     {
         $this->setUpBitrixCacheIsNeverCalled();
@@ -630,6 +690,8 @@ class CacheTest extends CacheFixture
 
     /**
      * @param int $iblockId
+     *
+     * @return void
      *
      * @dataProvider invalidIblockIdDataProvider
      */
@@ -644,7 +706,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array|int[]
+     * @return array<string, array>
      */
     public function invalidIblockIdDataProvider(): array
     {
@@ -660,6 +722,8 @@ class CacheTest extends CacheFixture
      * @param mixed $mixedTTL
      *
      * @throws ReflectionException
+     * @return void
+     *
      * @dataProvider mixedTTLDataProvider
      */
     public function testSetMixedTTL($expectedTTL, $mixedTTL)
@@ -676,7 +740,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array
+     * @return array<array>
      */
     public function mixedTTLDataProvider(): array
     {
@@ -689,6 +753,7 @@ class CacheTest extends CacheFixture
 
     /**
      * @throws ReflectionException
+     * @return void
      */
     public function testSetMixedTTLWrongType()
     {
@@ -700,6 +765,9 @@ class CacheTest extends CacheFixture
         $this->invokeCacheSetMixedTTL('what?');
     }
 
+    /**
+     * @return void
+     */
     public function testBitrixCacheInstantiation()
     {
         $bitrixApplicationProperty = new ReflectionProperty(Cache::class, 'bitrixApplication');
@@ -715,9 +783,11 @@ class CacheTest extends CacheFixture
         $reflectionMethod->invoke($this->cache);
 
         $this->assertInstanceOf(BitrixCache::class, $bitrixCacheProperty->getValue());
-
     }
 
+    /**
+     * @return void
+     */
     public function testBitrixCacheInstantiationFails()
     {
         $bitrixCacheProperty = new ReflectionProperty(Cache::class, 'bitrixCache');
@@ -734,6 +804,9 @@ class CacheTest extends CacheFixture
         $reflectionMethod->invoke($this->cache);
     }
 
+    /**
+     * @return void
+     */
     public function testBitrixTaggedCacheInstantiation()
     {
         $bitrixApplicationProperty = new ReflectionProperty(Cache::class, 'bitrixApplication');
@@ -751,6 +824,9 @@ class CacheTest extends CacheFixture
         $this->assertInstanceOf(BitrixTaggedCache::class, $bitrixTaggedCacheProperty->getValue());
     }
 
+    /**
+     * @return void
+     */
     public function testBitrixTaggedCacheInstantiationFails()
     {
         $bitrixTaggedCacheProperty = new ReflectionProperty(Cache::class, 'bitrixTaggedCache');

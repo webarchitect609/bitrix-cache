@@ -13,6 +13,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
     /**
      * @inheritDoc
      * @throws Exception
+     * @return void
      */
     protected function setUp(): void
     {
@@ -27,6 +28,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testGetHitsTheCache()
     {
@@ -74,6 +76,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testGetMissesTheCache()
     {
@@ -119,6 +122,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testSetWritesCache()
     {
@@ -174,6 +178,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testSetRewritesCache()
     {
@@ -232,6 +237,9 @@ class SimpleCacheInterfaceTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testSetCannotRewriteCache()
     {
         $this->setUpTaggedCacheIsNeverCalled();
@@ -282,6 +290,9 @@ class SimpleCacheInterfaceTest extends CacheFixture
         $this->assertFalse($set);
     }
 
+    /**
+     * @return void
+     */
     public function testSetRewritesCacheAfterSeveralAttempts()
     {
         $this->setUpTaggedCacheIsNeverCalled();
@@ -371,6 +382,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testDeleteHitsTheCache()
     {
@@ -430,6 +442,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testDeleteMissesTheCache()
     {
@@ -482,6 +495,9 @@ class SimpleCacheInterfaceTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testClear()
     {
         $this->bitrixCache->expects($this->once())
@@ -512,6 +528,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testHasHitsTheCache()
     {
@@ -548,6 +565,7 @@ class SimpleCacheInterfaceTest extends CacheFixture
 
     /**
      * @throws Exception
+     * @return void
      */
     public function testHasMissesTheCache()
     {
@@ -582,6 +600,9 @@ class SimpleCacheInterfaceTest extends CacheFixture
         );
     }
 
+    /**
+     * @return void
+     */
     public function testGetMultiple()
     {
         $cacheMock = [
@@ -657,6 +678,9 @@ class SimpleCacheInterfaceTest extends CacheFixture
         }
     }
 
+    /**
+     * @return void
+     */
     public function testGetMultipleWithIncorrectKeysType()
     {
         $this->setUpTaggedCacheIsNeverCalled();
@@ -664,10 +688,16 @@ class SimpleCacheInterfaceTest extends CacheFixture
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionCode(ErrorCode::KEYS_IS_NOT_ARRAY);
 
-        /** @noinspection PhpParamsInspection */
+        /**
+         * @noinspection PhpParamsInspection
+         * @phpstan-ignore-next-line
+         */
         $this->cache->getMultiple('wrong');
     }
 
+    /**
+     * @return void
+     */
     public function testSetMultiple()
     {
         $cacheMock = [
@@ -739,6 +769,9 @@ class SimpleCacheInterfaceTest extends CacheFixture
         $this->assertTrue($setMultiple);
     }
 
+    /**
+     * @return void
+     */
     public function testDeleteMultipleHitsTheCache()
     {
         $keys = [
@@ -787,6 +820,9 @@ class SimpleCacheInterfaceTest extends CacheFixture
         $this->assertTrue($deleteMultiple);
     }
 
+    /**
+     * @return void
+     */
     public function testDeleteMultipleMissesOneOfCachedValues()
     {
         $missingKey = 'key2';

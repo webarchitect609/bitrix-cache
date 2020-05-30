@@ -38,7 +38,6 @@ return Config::create()
                      [
                          __DIR__ . '/src/main',
                          __DIR__ . '/src/test',
-                         __DIR__ . '/src/mock',
                      ]
                  )
                                    ->files()
