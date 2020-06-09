@@ -18,6 +18,7 @@ use WebArch\BitrixCache\Exception\InvalidArgumentException;
 use WebArch\BitrixCache\Exception\LogicException;
 use WebArch\BitrixCache\Exception\RuntimeException;
 use WebArch\BitrixCache\Test\Fixture\CacheFixture;
+use WebArch\BitrixCache\Test\Fixture\NestedCaching;
 
 class CacheTest extends CacheFixture
 {
@@ -279,6 +280,96 @@ class CacheTest extends CacheFixture
 
         $this->cache->setKey($this->key)
                     ->callback($this->callback);
+    }
+
+    /**
+     * @return void
+     */
+    public function testNestedCallback()
+    {
+        $bitrixCacheProperty = new ReflectionProperty(Cache::class, 'bitrixCache');
+        $bitrixCacheProperty->setAccessible(true);
+        /**
+         * Кеш ингредиентов отсутствует - начнётся запись.
+         */
+        $ingredientCacheKey = 'ingredientCache';
+        $ingredientCache = Cache::create()
+                                ->setKey($ingredientCacheKey);
+        $ingredientBitrixCache = $this->getMockBuilder(BitrixCache::class)
+                                      ->onlyMethods(
+                                          [
+                                              'initCache',
+                                              'startDataCache',
+                                              'endDataCache',
+                                              'getVars',
+                                              'cleanDir',
+                                              'clean',
+                                              'abortDataCache',
+                                          ]
+                                      )
+                                      ->getMock();
+        $ingredientBitrixCache->expects($this->once())
+                              ->method('startDataCache')
+                              ->with(
+                                  Cache::DEFAULT_TTL,
+                                  $ingredientCacheKey,
+                                  Cache::DEFAULT_PATH,
+                                  [],
+                                  Cache::DEFAULT_BASE_DIR
+                              )
+                              ->willReturn(true);
+        $ingredientBitrixCache->expects($this->once())
+                              ->method('endDataCache')
+                              ->with([$this->resultKey => [123 => true]]);
+        $ingredientBitrixCache->expects($this->never())->method('initCache');
+        $ingredientBitrixCache->expects($this->never())->method('getVars');
+        $ingredientBitrixCache->expects($this->never())->method('cleanDir');
+        $ingredientBitrixCache->expects($this->never())->method('clean');
+        $ingredientBitrixCache->expects($this->never())->method('abortDataCache');
+        $bitrixCacheProperty->setValue($ingredientCache, $ingredientBitrixCache);
+
+        /**
+         * Кеш стоп-листа отсутствует - начнётся запись.
+         */
+        $stopListCacheKey = 'stopListCache';
+        $stopListCache = Cache::create()
+                              ->setKey($stopListCacheKey);
+        $stopListBitrixCache = $this->getMockBuilder(BitrixCache::class)
+                                    ->onlyMethods(
+                                        [
+                                            'initCache',
+                                            'startDataCache',
+                                            'endDataCache',
+                                            'getVars',
+                                            'cleanDir',
+                                            'clean',
+                                            'abortDataCache',
+                                        ]
+                                    )
+                                    ->getMock();
+        $stopListBitrixCache->expects($this->once())
+                            ->method('startDataCache')
+                            ->with(
+                                Cache::DEFAULT_TTL,
+                                $stopListCacheKey,
+                                Cache::DEFAULT_PATH,
+                                [],
+                                Cache::DEFAULT_BASE_DIR
+                            )
+                            ->willReturn(true);
+        $stopListBitrixCache->expects($this->once())
+                            ->method('endDataCache')
+                            ->with([$this->resultKey => ['ingredients' => [123 => true]]]);
+        $stopListBitrixCache->expects($this->never())->method('initCache');
+        $stopListBitrixCache->expects($this->never())->method('getVars');
+        $stopListBitrixCache->expects($this->never())->method('cleanDir');
+        $stopListBitrixCache->expects($this->never())->method('clean');
+        $stopListBitrixCache->expects($this->never())->method('abortDataCache');
+        $bitrixCacheProperty->setValue($stopListCache, $stopListBitrixCache);
+
+        $this->assertTrue(
+            (new NestedCaching($ingredientCache, $stopListCache))->isIngredientBlocked(123)
+        );
     }
 
     /**
@@ -776,13 +867,13 @@ class CacheTest extends CacheFixture
 
         $bitrixCacheProperty = new ReflectionProperty(Cache::class, 'bitrixCache');
         $bitrixCacheProperty->setAccessible(true);
-        $bitrixCacheProperty->setValue(null);
+        $bitrixCacheProperty->setValue($this->cache, null);
 
         $reflectionMethod = new ReflectionMethod(Cache::class, 'getBitrixCache');
         $reflectionMethod->setAccessible(true);
         $reflectionMethod->invoke($this->cache);
 
-        $this->assertInstanceOf(BitrixCache::class, $bitrixCacheProperty->getValue());
+        $this->assertInstanceOf(BitrixCache::class, $bitrixCacheProperty->getValue($this->cache));
     }
 
     /**
@@ -792,7 +883,7 @@ class CacheTest extends CacheFixture
     {
         $bitrixCacheProperty = new ReflectionProperty(Cache::class, 'bitrixCache');
         $bitrixCacheProperty->setAccessible(true);
-        $bitrixCacheProperty->setValue(null);
+        $bitrixCacheProperty->setValue($this->cache, null);
 
         $this->setUpBitrixApplicationToThrowSystemException();
 

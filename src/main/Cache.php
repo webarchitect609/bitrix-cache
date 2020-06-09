@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace WebArch\BitrixCache;
 
@@ -76,7 +77,7 @@ class Cache implements CacheInterface
     /**
      * @var null|BitrixCache
      */
-    private static $bitrixCache;
+    private $bitrixCache;
 
     /**
      * @var null|BitrixTaggedCache
@@ -139,7 +140,14 @@ class Cache implements CacheInterface
             } catch (Throwable $exception) {
                 $this->abort();
                 throw new RuntimeException(
-                    'The callback throws an exception.',
+                    sprintf(
+                        'The callback has thrown an exception [%s] %s (%s) in %s:%d',
+                        get_class($exception),
+                        $exception->getMessage(),
+                        $exception->getCode(),
+                        $exception->getFile(),
+                        $exception->getLine()
+                    ),
                     ErrorCode::CALLBACK_THROWS_EXCEPTION,
                     $exception
                 );
@@ -842,12 +850,12 @@ class Cache implements CacheInterface
     protected function getBitrixCache(): BitrixCache
     {
         try {
-            if (is_null(self::$bitrixCache)) {
-                self::$bitrixCache = $this->getBitrixApplication()
+            if (is_null($this->bitrixCache)) {
+                $this->bitrixCache = $this->getBitrixApplication()
                                           ->getCache();
             }
 
-            return self::$bitrixCache;
+            return $this->bitrixCache;
         } catch (SystemException $exception) {
             throw new RuntimeException(
                 sprintf(

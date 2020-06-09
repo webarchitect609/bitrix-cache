@@ -164,7 +164,7 @@ class CacheFixture extends TestCase
     {
         $bitrixCacheProperty = new ReflectionProperty(Cache::class, 'bitrixCache');
         $bitrixCacheProperty->setAccessible(true);
-        $bitrixCacheProperty->setValue($this->bitrixCache);
+        $bitrixCacheProperty->setValue($this->cache, $this->bitrixCache);
     }
 
     protected function setUpCache(): void

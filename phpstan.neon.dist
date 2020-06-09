@@ -3,5 +3,5 @@ parameters:
     paths:
         - src/main
         - src/test
-    autoload_files:
+    bootstrapFiles:
         - vendor/webarchitect609/bitrix-taxidermist/resources/autoload-dist.php
