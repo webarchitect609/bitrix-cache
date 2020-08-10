@@ -205,34 +205,19 @@ class Cache implements CacheInterface
      *     используется значение по умолчанию.
      *
      * @throws InvalidArgumentException
-     * @return bool true в случае успеха или false в случае неудачи.
+     * @return bool true в случае успешной записи или false в случае, если кеш с таким ключом существует.
      */
     public function set($key, $value, $ttl = null)
     {
         $this->setKey($key)
              ->setMixedTTL($ttl);
-
-        $rewriteAttempts = 0;
-        do {
-            /**
-             * Если кеш ещё существует, его придётся предварительно удалить,
-             * иначе startDataCache() вернёт false и не будет записывать новое значение в кеш.
-             */
-            $this->delete($key);
-
-            $startCache = $this->getBitrixCache()->startDataCache(
-                $this->getTTL(),
-                $this->getKey(),
-                $this->getPath(),
-                [],
-                $this->getBaseDir()
-            );
-            $rewriteAttempts++;
-            /**
-             * См. известные особенности / перезапись кеша в README.md.
-             */
-        } while (!$startCache && $rewriteAttempts < 1000);
-
+        $startCache = $this->getBitrixCache()->startDataCache(
+            $this->getTTL(),
+            $this->getKey(),
+            $this->getPath(),
+            [],
+            $this->getBaseDir()
+        );
         if ($startCache) {
             $this->startTagCache();
             $this->endTagCache();
@@ -242,8 +227,7 @@ class Cache implements CacheInterface
         }
 
         /**
-         * Ошибка записи в кеш: его удалили, а он всё ещё существует.
-         * Появление такой ошибки крайне маловероятно.
+         * Ошибка записи в кеш: он всё ещё существует.
          */
         return false;
     }

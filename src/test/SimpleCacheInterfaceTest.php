@@ -126,15 +126,8 @@ class SimpleCacheInterfaceTest extends CacheFixture
      */
     public function testSetWritesCache()
     {
-        $this->bitrixCache->expects($this->once())
-                          ->method('initCache')
-                          ->with(
-                              Cache::DEFAULT_TTL,
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              Cache::DEFAULT_BASE_DIR
-                          )
-                          ->willReturn(false);
+        $this->bitrixCache->expects($this->never())
+                          ->method('initCache');
 
         $this->bitrixCache->expects($this->never())
                           ->method('clean');
@@ -180,88 +173,15 @@ class SimpleCacheInterfaceTest extends CacheFixture
      * @throws Exception
      * @return void
      */
-    public function testSetRewritesCache()
-    {
-        $this->bitrixCache->expects($this->once())
-                          ->method('initCache')
-                          ->with(
-                              Cache::DEFAULT_TTL,
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              Cache::DEFAULT_BASE_DIR
-                          )
-                          ->willReturn(true);
-
-        $this->bitrixCache->expects($this->once())
-                          ->method('clean')
-                          ->with(
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              Cache::DEFAULT_BASE_DIR
-                          );
-
-        $this->bitrixCache->expects($this->once())
-                          ->method('startDataCache')
-                          ->with(
-                              Cache::DEFAULT_TTL,
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              [],
-                              Cache::DEFAULT_BASE_DIR
-                          )
-                          ->willReturn(true);
-
-        $this->bitrixCache->expects($this->once())
-                          ->method('endDataCache')
-                          ->with([$this->resultKey => $this->cachedValue]);
-
-        $this->bitrixCache->expects($this->never())
-                          ->method('getVars');
-
-        $this->bitrixCache->expects($this->never())
-                          ->method('cleanDir');
-
-        $this->bitrixCache->expects($this->never())
-                          ->method('abortDataCache');
-
-        $set = $this->cache->set($this->key, $this->cachedValue);
-
-        $this->assertTrue($set);
-        $this->assertSame(
-            $this->key,
-            $this->cache->getKey()
-        );
-        $this->assertSame(
-            Cache::DEFAULT_TTL,
-            $this->cache->getTTL()
-        );
-    }
-
-    /**
-     * @return void
-     */
     public function testSetCannotRewriteCache()
     {
-        $this->setUpTaggedCacheIsNeverCalled();
-        $this->bitrixCache->expects($this->any())
-                          ->method('initCache')
-                          ->with(
-                              Cache::DEFAULT_TTL,
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              Cache::DEFAULT_BASE_DIR
-                          )
-                          ->willReturn(true);
+        $this->bitrixCache->expects($this->never())
+                          ->method('initCache');
 
-        $this->bitrixCache->expects($this->any())
-                          ->method('clean')
-                          ->with(
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              Cache::DEFAULT_BASE_DIR
-                          );
+        $this->bitrixCache->expects($this->never())
+                          ->method('clean');
 
-        $this->bitrixCache->expects($this->any())
+        $this->bitrixCache->expects($this->once())
                           ->method('startDataCache')
                           ->with(
                               Cache::DEFAULT_TTL,
@@ -288,96 +208,14 @@ class SimpleCacheInterfaceTest extends CacheFixture
         $set = $this->cache->set($this->key, $this->cachedValue);
 
         $this->assertFalse($set);
-    }
-
-    /**
-     * @return void
-     */
-    public function testSetRewritesCacheAfterSeveralAttempts()
-    {
-        $this->setUpTaggedCacheIsNeverCalled();
-        /**
-         * Неудачные попытки удалить кеш и начать перезапись.
-         */
-        $atCount = 0;
-        for ($i = 0; $i < 3; $i++) {
-            $this->bitrixCache->expects($this->at($atCount++))
-                              ->method('initCache')
-                              ->with(
-                                  Cache::DEFAULT_TTL,
-                                  $this->key,
-                                  Cache::DEFAULT_PATH,
-                                  Cache::DEFAULT_BASE_DIR
-                              )
-                              ->willReturn(true);
-
-            $this->bitrixCache->expects($this->at($atCount++))
-                              ->method('clean')
-                              ->with(
-                                  $this->key,
-                                  Cache::DEFAULT_PATH,
-                                  Cache::DEFAULT_BASE_DIR
-                              );
-
-            $this->bitrixCache->expects($this->at($atCount++))
-                              ->method('startDataCache')
-                              ->with(
-                                  Cache::DEFAULT_TTL,
-                                  $this->key,
-                                  Cache::DEFAULT_PATH,
-                                  [],
-                                  Cache::DEFAULT_BASE_DIR
-                              )
-                              ->willReturn(false);
-        }
-        /**
-         * Удачное удаление кеша и перезапись.
-         */
-        $this->bitrixCache->expects($this->at($atCount++))
-                          ->method('initCache')
-                          ->with(
-                              Cache::DEFAULT_TTL,
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              Cache::DEFAULT_BASE_DIR
-                          )
-                          ->willReturn(true);
-
-        $this->bitrixCache->expects($this->at($atCount++))
-                          ->method('clean')
-                          ->with(
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              Cache::DEFAULT_BASE_DIR
-                          );
-
-        $this->bitrixCache->expects($this->at($atCount++))
-                          ->method('startDataCache')
-                          ->with(
-                              Cache::DEFAULT_TTL,
-                              $this->key,
-                              Cache::DEFAULT_PATH,
-                              [],
-                              Cache::DEFAULT_BASE_DIR
-                          )
-                          ->willReturn(true);
-
-        $this->bitrixCache->expects($this->at($atCount))
-                          ->method('endDataCache')
-                          ->with([$this->resultKey => $this->cachedValue]);
-
-        $this->bitrixCache->expects($this->never())
-                          ->method('getVars');
-
-        $this->bitrixCache->expects($this->never())
-                          ->method('cleanDir');
-
-        $this->bitrixCache->expects($this->never())
-                          ->method('abortDataCache');
-
-        $set = $this->cache->set($this->key, $this->cachedValue);
-
-        $this->assertTrue($set);
+        $this->assertSame(
+            $this->key,
+            $this->cache->getKey()
+        );
+        $this->assertSame(
+            Cache::DEFAULT_TTL,
+            $this->cache->getTTL()
+        );
     }
 
     /**
@@ -698,11 +536,8 @@ class SimpleCacheInterfaceTest extends CacheFixture
     /**
      * @return void
      */
-    public function testSetMultiple()
+    public function testSetMultipleSuccess()
     {
-        $cacheMock = [
-            'key2' => 'cachedValue2',
-        ];
         $setMock = [
             'key1' => 'newValue1',
             'key2' => 'newValue2',
@@ -710,35 +545,6 @@ class SimpleCacheInterfaceTest extends CacheFixture
         ];
         $atCount = 0;
         foreach ($setMock as $key => $value) {
-            if (array_key_exists($key, $cacheMock)) {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('initCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(true);
-
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('clean')
-                                  ->with(
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  );
-            } else {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('initCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(false);
-            }
             $this->bitrixCache->expects($this->at($atCount++))
                               ->method('startDataCache')
                               ->with(
@@ -756,6 +562,12 @@ class SimpleCacheInterfaceTest extends CacheFixture
         }
 
         $this->bitrixCache->expects($this->never())
+                          ->method('initCache');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('clean');
+
+        $this->bitrixCache->expects($this->never())
                           ->method('getVars');
 
         $this->bitrixCache->expects($this->never())
@@ -767,6 +579,70 @@ class SimpleCacheInterfaceTest extends CacheFixture
         $setMultiple = $this->cache->setMultiple($setMock);
 
         $this->assertTrue($setMultiple);
+    }
+
+    /**
+     * @return void
+     */
+    public function testSetMultipleFails()
+    {
+        $cacheMock = [
+            'key2' => 'cachedValue2',
+        ];
+        $setMock = [
+            'key1' => 'newValue1',
+            'key2' => 'newValue2',
+            'key3' => 'newValue3',
+        ];
+        $atCount = 0;
+        foreach ($setMock as $key => $value) {
+            if (array_key_exists($key, $cacheMock)) {
+                $this->bitrixCache->expects($this->at($atCount++))
+                                  ->method('startDataCache')
+                                  ->with(
+                                      Cache::DEFAULT_TTL,
+                                      $key,
+                                      Cache::DEFAULT_PATH,
+                                      [],
+                                      Cache::DEFAULT_BASE_DIR
+                                  )
+                                  ->willReturn(false);
+            } else {
+                $this->bitrixCache->expects($this->at($atCount++))
+                                  ->method('startDataCache')
+                                  ->with(
+                                      Cache::DEFAULT_TTL,
+                                      $key,
+                                      Cache::DEFAULT_PATH,
+                                      [],
+                                      Cache::DEFAULT_BASE_DIR
+                                  )
+                                  ->willReturn(true);
+
+                $this->bitrixCache->expects($this->at($atCount++))
+                                  ->method('endDataCache')
+                                  ->with([$this->resultKey => $value]);
+            }
+        }
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('initCache');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('clean');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('getVars');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('cleanDir');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('abortDataCache');
+
+        $setMultiple = $this->cache->setMultiple($setMock);
+
+        $this->assertFalse($setMultiple);
     }
 
     /**
