@@ -39,4 +39,22 @@ class ErrorCode
     const EMPTY_TAG = 17;
 
     const INVALID_IBLOCK_ID = 18;
+
+    const INVALID_BETA = 19;
+
+    const INVALID_EXPIRATION = 20;
+
+    const INVALID_EXPIRATION_DATE = 21;
+
+    const NON_TAG_AWARE = 22;
+
+    const INVALID_TAG = 23;
+
+    const RESERVED_CHARACTERS_IN_TAG = 24;
+
+    const BASE_DIR_AND_PATH_ARE_TOO_LONG = 25;
+
+    const INVALID_KEY_TYPE = 26;
+
+    const RESERVED_CHARACTERS_IN_KEY = 27;
 }

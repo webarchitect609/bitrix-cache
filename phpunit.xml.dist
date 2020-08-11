@@ -17,6 +17,9 @@
     <filter>
         <whitelist>
             <directory suffix=".php">src/main</directory>
+            <exclude>
+                <file>src/main/BitrixCache.php</file>
+            </exclude>
         </whitelist>
     </filter>
     <logging>

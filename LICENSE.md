@@ -1,4 +1,5 @@
-Copyright 2017, Sergey Gripinskiy web-architect@mail.ru, Oleg Maksimenko <oleg.39style@gmail.com>
+Copyright 2017, Sergey Gripinskiy web-architect@mail.ru, Oleg Maksimenko <oleg.39style@gmail.com>,
+Nicolas Grekas <p@tchwork.com>
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:

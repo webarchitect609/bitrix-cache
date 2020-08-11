@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+1.6.0
+-----
+
+### Добавлено:
+- Адаптер `\WebArch\BitrixCache\AntiStampedeCacheAdapter` с двойной защитой от
+    ["давки в кеше"](https://en.wikipedia.org/wiki/Cache_stampede) ("cache stampede"; другое название - "собачья
+    свалка", "dog piling") методами "блокировки"("locking") и "вероятностного преждевременного
+    устаревания"("probabilistic early expiration"), адаптированными из
+    [Symfony Cache 5.1](https://symfony.com/doc/5.1/components/cache.html)
+
+### Изменено:
+- Класс `\WebArch\BitrixCache\BitrixCache` игнорируется при составлении coverage отчёта
+
 1.5.1
 -----
 

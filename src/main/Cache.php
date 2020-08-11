@@ -792,7 +792,7 @@ class Cache implements CacheInterface
     {
         if ($ttl <= 0) {
             throw new InvalidArgumentException(
-                'TTL must be positive number.',
+                'TTL must be positive number or zero.',
                 ErrorCode::NEGATIVE_OR_ZERO_TTL
             );
         }

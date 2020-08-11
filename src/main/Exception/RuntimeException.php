@@ -2,9 +2,10 @@
 
 namespace WebArch\BitrixCache\Exception;
 
-use Psr\SimpleCache\CacheException;
+use Psr\Cache\CacheException;
+use Psr\SimpleCache\CacheException as SimpleCacheException;
 use RuntimeException as CommonRuntimeException;
 
-class RuntimeException extends CommonRuntimeException implements CacheException
+class RuntimeException extends CommonRuntimeException implements CacheException, SimpleCacheException
 {
 }

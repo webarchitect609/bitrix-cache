@@ -1,6 +1,6 @@
 {
   "name": "webarchitect609/bitrix-cache",
-  "description": "Comfortable fluent interface for Bitrix cache.",
+  "description": "Comfortable fluent interface for Bitrix cache. Anti-stampede cache protection.",
   "homepage": "https://github.com/webarchitect609/bitrix-cache",
   "keywords": [
     "bitrix",
@@ -19,11 +19,20 @@
       "name": "Oleg Maksimenko",
       "email": "oleg.39style@gmail.com",
       "role": "Contributor"
+    },
+    {
+      "name": "Nicolas Grekas",
+      "email": "p@tchwork.com",
+      "role": "Indirect Contributor"
     }
   ],
   "require": {
     "php": "^7.2",
-    "psr/simple-cache": "^1.0"
+    "psr/log": "^1.1",
+    "psr/simple-cache": "^1.0",
+    "symfony/cache-contracts": "^2.1",
+    "symfony/polyfill-php80": "^1.18",
+    "symfony/service-contracts": "^2.1"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.16",
@@ -52,7 +61,7 @@
     "check:analyse": "vendor/bin/phpstan analyse --ansi --no-progress",
     "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff",
     "check:security": "@composer update --no-suggest --no-interaction --dry-run roave/security-advisories",
-    "check:test": "vendor/bin/phpunit"
+    "check:test": "vendor/bin/phpunit --colors=always"
   },
   "scripts-descriptions": {
     "check:all": "Perform all the checks at once: code-style, static code analysis, unit tests and security.",

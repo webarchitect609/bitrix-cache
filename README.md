@@ -8,11 +8,17 @@
 [![More stuff from me](https://img.shields.io/badge/packagist-webarchitect609-blueviolet)](https://packagist.org/packages/webarchitect609/)
 
 Удобная обёртка для работы с кешем в Битрикс через fluent interface или по
-[PSR-16](https://www.php-fig.org/psr/psr-16/).
+[PSR-16](https://www.php-fig.org/psr/psr-16/). Защита от
+["cache stampede"](https://en.wikipedia.org/wiki/Cache_stampede) ("давки в кеше") по
+[PSR-6: Caching Interface](https://www.php-fig.org/psr/psr-6/)
 
 Возможности
 -----------
 Основное назначение этой библиотеки - **максимальное ускорение** написания кода, требующего использования кеширования.
+Дополнительное - **защита от "давки в кеше"**("cache stampede" или "dog piling") для высоконагруженных проектов
+методами "блокировки"("locking") и "вероятностного преждевременного устаревания"("probabilistic early expiration"),
+адаптированная из [Symfony Cache 5.1](https://packagist.org/packages/symfony/cache).
+
 - запись, чтение, валидация и удаление закешированной информации через fluent interface с поддержкой всех
     Битрикс-специфичных параметров:
     - baseDir
@@ -22,6 +28,9 @@
 - кеширование результата выполнения [замыкания](https://www.php.net/manual/ru/functions.anonymous.php)
 - поддержка интерфейса `Psr\SimpleCache\CacheInterface` по
     [PSR-16: Common Interface for Caching Libraries](https://www.php-fig.org/psr/psr-16/) 
+- адаптер `AntiStampedeCacheAdapter` с двойной защитой от "давки в кеше", соответствующий
+    [PSR-6: Caching Interface](https://www.php-fig.org/psr/psr-6/) и
+    [Symfony Cache Contracts](https://github.com/symfony/cache-contracts)
 
 Под "капотом" **только** `Bitrix\Main\Data\Cache` и `Bitrix\Main\Data\TaggedCache` из
 [ядра D7](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&CHAPTER_ID=05062&LESSON_PATH=3913.5062).
@@ -226,6 +235,39 @@
     */
     $cache->has('key2');
     ```
+11. Защита от "давки в кеше"
+
+    Отдельно должен быть собран адаптер, обслуживающий кеш с защитой от "давки".
+    
+    ```php
+    use \WebArch\BitrixCache\AntiStampedeCacheAdapter;
+    
+    $path = '/some/path';
+    $defaultLifetime = 60;
+    $baseDir = 'someBaseDir';
+    $cacheAdapter = new AntiStampedeCacheAdapter($path, $defaultLifetime, $baseDir);
+    ```
+    
+    Затем следует использовать этот адаптер в тех местах кода, где такая защита требуется.
+    
+    ```php
+    use \WebArch\BitrixCache\AntiStampedeCacheAdapter;
+    use \WebArch\BitrixCache\CacheItem;
+    
+    /** @var AntiStampedeCacheAdapter $cacheAdapter */
+    $cacheAdapter->get(
+        'myKey',
+        function (CacheItem $cacheItem) {
+            $cacheItem->expiresAfter(3600);
+            
+            return date(DATE_ISO8601);
+        }
+    );
+    ```
+    
+    Дополнительная информация описана в документации компонента
+    [Symfony Cache](https://symfony.com/doc/5.1/components/cache.html#cache-component-contracts) и соглашения
+    [Cache Contracts](https://symfony.com/doc/5.1/components/cache.html#cache-component-contracts).
 
 Известные особенности
 ---------------------
