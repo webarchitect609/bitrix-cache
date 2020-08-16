@@ -30,6 +30,11 @@ class Cache implements CacheInterface
     private const RESULT_KEY = '24985a76-23ee-46d6-aab6-2dcbac7190f6';
 
     /**
+     * Разделитель частей path, path separator.
+     */
+    private const PS = '/';
+
+    /**
      * TTL по умолчанию.
      */
     public const DEFAULT_TTL = 3600;
@@ -539,6 +544,21 @@ class Cache implements CacheInterface
     }
 
     /**
+     * Устанавливает подкаталог(или же пространство имён) для идентификаторов кеша на основании имени класса. Т.е.
+     * обратные слэши заменяются на слэши, и в начало добавляется слэш, если отсутствует.
+     *
+     * @param string $class
+     *
+     * @return $this
+     */
+    public function setPathByClass(string $class)
+    {
+        $this->setPath(self::PS . ltrim(str_replace('\\', self::PS, $class), self::PS));
+
+        return $this;
+    }
+
+    /**
      * Возвращает корневую папку для хранения кеша.
      *
      * @return string
@@ -709,20 +729,20 @@ class Cache implements CacheInterface
          * или APC это будет критичным при сбросе кеша.
          * https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2978&LESSON_PATH=3913.4565.4780.2978
          */
-        if (mb_substr($path, 0, 1) !== self::DEFAULT_PATH) {
+        if (mb_substr($path, 0, 1) !== self::PS) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Path must start with %s',
-                    self::DEFAULT_PATH
+                    self::PS
                 ),
                 ErrorCode::PATH_DOES_NOT_START_WITH_SLASH
             );
         }
-        if (mb_strlen($path) > 1 && mb_substr($path, -1) === self::DEFAULT_PATH) {
+        if (mb_strlen($path) > 1 && mb_substr($path, -1) === self::PS) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Path cannot end with %s',
-                    self::DEFAULT_PATH
+                    self::PS
                 ),
                 ErrorCode::PATH_ENDS_WITH_SLASH
             );

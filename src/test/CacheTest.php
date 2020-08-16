@@ -933,4 +933,34 @@ class CacheTest extends CacheFixture
         $reflectionMethod->setAccessible(true);
         $reflectionMethod->invoke($this->cache);
     }
+
+    /**
+     * @param string $class
+     * @param string $expectedPath
+     *
+     * @return void
+     *
+     * @dataProvider pathByClassDataProvider
+     */
+    public function testSetPathByClass(string $class, string $expectedPath): void
+    {
+        $this->setUpTaggedCacheIsNeverCalled();
+        $this->setUpBitrixCacheIsNeverCalled();
+        $this->cache->setPathByClass($class);
+        $this->assertEquals($expectedPath, $this->cache->getPath());
+    }
+
+    /**
+     * @return array<array<string>>
+     */
+    public function pathByClassDataProvider(): array
+    {
+        return [
+            [DateTimeImmutable::class, '/DateTimeImmutable'],
+            ['Namespace\Class', '/Namespace/Class'],
+            ['\Namespace\Class', '/Namespace/Class'],
+            ['Class', '/Class'],
+            ['\Class', '/Class'],
+        ];
+    }
 }
