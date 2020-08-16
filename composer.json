@@ -43,16 +43,23 @@
     }
   },
   "scripts": {
+    "check:all": [
+      "@check:code-style",
+      "@check:analyse",
+      "@check:test",
+      "@check:security"
+    ],
     "check:analyse": "vendor/bin/phpstan analyse --ansi --no-progress",
     "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff",
-    "check:security": "@composer update --dry-run roave/security-advisories",
+    "check:security": "@composer update --no-suggest --no-interaction --dry-run roave/security-advisories",
     "check:test": "vendor/bin/phpunit"
   },
   "scripts-descriptions": {
-    "check:analyse": "Static code anaysis via PHPStan",
+    "check:all": "Perform all the checks at once: code-style, static code analysis, unit tests and security.",
+    "check:analyse": "Static code analysis via PHPStan",
     "check:code-style": "Check the code style.",
     "check:security": "Manual dependencies security check via roave/security-advisories.",
-    "check:test": "Run all UnitTests."
+    "check:test": "Run all unit tests."
   },
   "config": {
     "sort-packages": true
