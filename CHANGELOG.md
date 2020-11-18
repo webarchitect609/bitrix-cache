@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+1.7.0
+-----
+
+### Добавлено:
+- Метод `\WebArch\BitrixCache\Cache::clearByIblockTag()`, очищающий кеш по тегу инфоблока 
+
 1.6.1
 -----
 

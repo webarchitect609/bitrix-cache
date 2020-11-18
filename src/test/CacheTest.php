@@ -465,6 +465,29 @@ class CacheTest extends CacheFixture
     /**
      * @return void
      */
+    public function testClearByIblockTag(): void
+    {
+        $this->setUpBitrixCacheIsNeverCalled();
+        $iblockId = 100500;
+        $tag = 'iblock_id_'.$iblockId;
+        $this->bitrixTaggedCache->expects($this->once())
+                                ->method('clearByTag')
+                                ->with($tag);
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('abortTagCache');
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('endTagCache');
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('startTagCache');
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('registerTag');
+
+        $this->cache->clearByIblockTag($iblockId);
+    }
+
+    /**
+     * @return void
+     */
     public function testSetTTLGetTTL()
     {
         $this->setUpBitrixCacheIsNeverCalled();

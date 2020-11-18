@@ -184,6 +184,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException Если в $key передано недопустимое значение.
      * @return mixed Значение из кеша или $default в случае "промаха".
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function get($key, $default = null)
     {
@@ -211,6 +212,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return bool true в случае успешной записи или false в случае, если кеш с таким ключом существует.
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function set($key, $value, $ttl = null)
     {
@@ -244,6 +246,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return bool true при успешном удалении или false при ошибке.
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function delete($key)
     {
@@ -285,6 +288,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return array<mixed>
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function getMultiple($keys, $default = null)
     {
@@ -306,6 +310,7 @@ class Cache implements CacheInterface
      *     используется значение по умолчанию.
      *
      * @return bool true в случае успеха или false в случае неудачи.
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function setMultiple($values, $ttl = null)
     {
@@ -326,6 +331,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return bool true в случае успеха или false в случае неудачи удаления хотя бы одного из ключей.
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function deleteMultiple($keys)
     {
@@ -352,6 +358,7 @@ class Cache implements CacheInterface
      * @throws InvalidArgumentException
      * @return bool
      *
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function has($key)
     {
@@ -424,6 +431,17 @@ class Cache implements CacheInterface
     {
         $this->getBitrixTaggedCache()
              ->clearByTag($tag);
+    }
+
+    /**
+     * Сбрасывает кеш по тегу инфоблока.
+     *
+     * @param int $iblockId числовой идентификатор инфоблока.
+     */
+    public function clearByIblockTag(int $iblockId): void
+    {
+        $this->getBitrixTaggedCache()
+             ->clearByTag($this->createIblockTag($iblockId));
     }
 
     /**
@@ -614,7 +632,7 @@ class Cache implements CacheInterface
     public function addIblockTag(int $iblockId)
     {
         $this->assertIblockId($iblockId);
-        $this->addTag(self::TAG_PREFIX_IBLOCK_ID . $iblockId);
+        $this->addTag($this->createIblockTag($iblockId));
 
         return $this;
     }
@@ -694,6 +712,7 @@ class Cache implements CacheInterface
      * @param string $name
      *
      * @throws InvalidArgumentException
+     * @noinspection PhpMissingParamTypeInspection
      */
     private function assertKeys($keys, string $name): void
     {
@@ -895,5 +914,15 @@ class Cache implements CacheInterface
                 $exception
             );
         }
+    }
+
+    /**
+     * @param int $iblockId
+     *
+     * @return string
+     */
+    private function createIblockTag(int $iblockId): string
+    {
+        return self::TAG_PREFIX_IBLOCK_ID . $iblockId;
     }
 }
