@@ -72,5 +72,11 @@
   },
   "config": {
     "sort-packages": true
-  }
+  },
+  "funding": [
+    {
+      "type": "ЮMoney",
+      "url": "https://sobe.ru/na/bitrix_cache"
+    }
+  ]
 }
