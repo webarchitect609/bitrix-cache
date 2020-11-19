@@ -52,8 +52,6 @@ class ErrorCode
 
     const RESERVED_CHARACTERS_IN_TAG = 24;
 
-    const BASE_DIR_AND_PATH_ARE_TOO_LONG = 25;
-
     const INVALID_KEY_TYPE = 26;
 
     const RESERVED_CHARACTERS_IN_KEY = 27;

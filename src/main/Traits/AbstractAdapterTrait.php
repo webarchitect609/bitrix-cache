@@ -57,6 +57,9 @@ trait AbstractAdapterTrait
 
     /**
      * @var null|int The maximum length to enforce for identifiers or null when no limit applies
+     *
+     * @deprecated Bitrix transforms baseDir, path and even the key in such way, it's impossible to perform any length
+     *     check on it.
      */
     protected $maxIdLength;
 
@@ -430,19 +433,6 @@ trait AbstractAdapterTrait
         CacheItem::validateKey($key);
         $this->ids[$key] = $key;
 
-        if (null === $this->maxIdLength) {
-            return $this->namespace . $this->namespaceVersion . $key;
-        }
-        if (strlen($id = $this->namespace . $this->namespaceVersion . $key) > $this->maxIdLength) {
-            // Use MD5 to favor speed over security, which is not an issue here
-            $this->ids[$key] = $id = substr_replace(
-                base64_encode(hash('md5', $key, true)),
-                static::NS_SEPARATOR,
-                -(strlen($this->namespaceVersion) + 2)
-            );
-            $id = $this->namespace . $this->namespaceVersion . $id;
-        }
-
-        return $id;
+        return $this->namespace . $this->namespaceVersion . $key;
     }
 }

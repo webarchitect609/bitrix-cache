@@ -37,7 +37,7 @@ class AntiStampedeCacheAdapterFixture extends TestCase
     protected $cacheBaseDir = 'baseDir';
 
     /**
-     * @var AntiStampedeCacheAdapter
+     * @var AntiStampedeCacheAdapter|MockObject
      */
     protected $cacheAdapter;
 

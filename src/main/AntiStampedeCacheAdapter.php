@@ -2,7 +2,6 @@
 
 namespace WebArch\BitrixCache;
 
-use Bitrix\Main\Data\Cache as BitrixCache;
 use Closure;
 use Exception;
 use Psr\Cache\CacheItemPoolInterface;
@@ -10,9 +9,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Service\ResetInterface;
-use WebArch\BitrixCache\Enum\CacheEngineType;
-use WebArch\BitrixCache\Enum\ErrorCode;
-use WebArch\BitrixCache\Exception\InvalidArgumentException;
 use WebArch\BitrixCache\Traits\AbstractAdapterTrait;
 use WebArch\BitrixCache\Traits\ContractsTrait;
 
@@ -53,22 +49,9 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
         string $baseDir = Cache::DEFAULT_BASE_DIR
     ) {
         $this->setLogger(new NullLogger());
-        $this->maxIdLength = $this->getMaxIdLengthByEngineType(BitrixCache::getCacheEngineType());
         $this->path = $path;
         $this->defaultLifetime = $defaultLifetime;
         $this->baseDir = $baseDir;
-        if (!is_numeric($this->maxIdLength) && strlen($this->baseDir . $this->path) > $this->maxIdLength - 24) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'BaseDir + Path must be %d chars max, %d given ("%s" + "%s")',
-                    $this->maxIdLength - 24,
-                    strlen($this->baseDir . $this->path),
-                    $this->baseDir,
-                    $this->path
-                ),
-                ErrorCode::BASE_DIR_AND_PATH_ARE_TOO_LONG
-            );
-        }
         $this->createCacheItem = Closure::bind(
             static function ($key, $value, $isHit) {
                 $v = $value;
@@ -286,20 +269,6 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
     protected function doClear(string $namespace)
     {
         return $this->getCache()->clear();
-    }
-
-    /**
-     * @param string $engineType
-     *
-     * @return null|int
-     */
-    private function getMaxIdLengthByEngineType(string $engineType): ?int
-    {
-        if ($engineType === CacheEngineType::MEMCACHE) {
-            return 250;
-        }
-
-        return null;
     }
 
     /**

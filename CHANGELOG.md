@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+1.6.1
+-----
+
+### Исправлено:
+- Создание `\WebArch\BitrixCache\AntiStampedeCacheAdapter` при использовании не `cacheenginememcache` приводило к ошибке
+    `InvalidArgumentException`
+
 1.6.0
 -----
 
