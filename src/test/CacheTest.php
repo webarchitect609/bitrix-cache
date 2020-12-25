@@ -138,6 +138,118 @@ class CacheTest extends CacheFixture
     }
 
     /**
+     * @throws ReflectionException
+     * @return void
+     */
+    public function testCallbackSetsTag(): void
+    {
+        $tag = 'closureTag';
+        $this->callback = function () use ($tag) {
+            $this->cache->addTag($tag);
+
+            return $this->cachedValue;
+        };
+        $this->setUpCallbackKey();
+        $atCountBitrixCache = 0;
+        $atCountBitrixTaggedCache = 0;
+        $this->bitrixCache->expects($this->at($atCountBitrixCache++))
+                          ->method('startDataCache')
+                          ->with(
+                              Cache::DEFAULT_TTL,
+                              $this->callbackKey,
+                              Cache::DEFAULT_PATH,
+                              [],
+                              Cache::DEFAULT_BASE_DIR
+                          )
+                          ->willReturn(true);
+
+        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache++))
+                                ->method('startTagCache')
+                                ->with(Cache::DEFAULT_PATH);
+
+        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache++))
+                                ->method('registerTag')
+                                ->with($tag);
+
+        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache))
+                                ->method('endTagCache');
+
+        $this->bitrixCache->expects($this->at($atCountBitrixCache))
+                          ->method('endDataCache')
+                          ->with([$this->resultKey => $this->cachedValue]);
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('getVars');
+
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('abortTagCache');
+
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('clearByTag');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('initCache');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('cleanDir');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('clean');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('abortDataCache');
+
+        $this->assertSame(
+            $this->cachedValue,
+            $this->cache->callback($this->callback)
+        );
+    }
+
+    /**
+     * @throws ReflectionException
+     * @return void
+     */
+    public function testCallbackSetsTagButAbortsCache(): void
+    {
+        $this->setUpTaggedCacheIsNeverCalled();
+        $this->bitrixCache->expects($this->never())
+                          ->method('initCache');
+        $this->bitrixCache->expects($this->never())
+                          ->method('endDataCache');
+        $this->bitrixCache->expects($this->never())
+                          ->method('getVars');
+        $this->bitrixCache->expects($this->never())
+                          ->method('cleanDir');
+        $this->bitrixCache->expects($this->never())
+                          ->method('clean');
+        $this->bitrixCache->expects($this->never())
+                          ->method('abortDataCache');
+        $tag = 'closureTag';
+        $this->callback = function () use ($tag) {
+            $this->cache->addTag($tag)
+                        ->abort();
+
+            return $this->cachedValue;
+        };
+        $this->setUpCallbackKey();
+        $this->bitrixCache->expects($this->once())
+                          ->method('startDataCache')
+                          ->with(
+                              Cache::DEFAULT_TTL,
+                              $this->callbackKey,
+                              Cache::DEFAULT_PATH,
+                              [],
+                              Cache::DEFAULT_BASE_DIR
+                          )
+                          ->willReturn(true);
+
+        $this->assertSame(
+            $this->cachedValue,
+            $this->cache->callback($this->callback)
+        );
+    }
+
+    /**
      * @throws Throwable
      * @return void
      */
@@ -187,19 +299,19 @@ class CacheTest extends CacheFixture
                           )
                           ->willReturn(true);
 
-        $this->bitrixTaggedCache->expects($this->once())
+        $this->bitrixTaggedCache->expects($this->never())
                                 ->method('startTagCache')
                                 ->with(Cache::DEFAULT_PATH);
 
         $tag = 'tag';
-        $this->bitrixTaggedCache->expects($this->once())
+        $this->bitrixTaggedCache->expects($this->never())
                                 ->method('registerTag')
                                 ->with($tag);
 
-        $this->bitrixCache->expects($this->once())
+        $this->bitrixCache->expects($this->never())
                           ->method('abortDataCache');
 
-        $this->bitrixTaggedCache->expects($this->once())
+        $this->bitrixTaggedCache->expects($this->never())
                                 ->method('abortTagCache');
 
         $this->bitrixCache->expects($this->never())
@@ -469,7 +581,7 @@ class CacheTest extends CacheFixture
     {
         $this->setUpBitrixCacheIsNeverCalled();
         $iblockId = 100500;
-        $tag = 'iblock_id_'.$iblockId;
+        $tag = 'iblock_id_' . $iblockId;
         $this->bitrixTaggedCache->expects($this->once())
                                 ->method('clearByTag')
                                 ->with($tag);

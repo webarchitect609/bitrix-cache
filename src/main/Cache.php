@@ -80,6 +80,11 @@ class Cache implements CacheInterface
     private $tags = [];
 
     /**
+     * @var bool Признак отмены записи кеша из замыкания.
+     */
+    private $closureAbortedCache = false;
+
+    /**
      * @var null|BitrixCache
      */
     private $bitrixCache;
@@ -139,11 +144,10 @@ class Cache implements CacheInterface
             $this->getBaseDir()
         );
         if ($startCache) {
-            $this->startTagCache();
             try {
+                $this->closureAbortedCache = false;
                 $result = $callback();
             } catch (Throwable $exception) {
-                $this->abort();
                 throw new RuntimeException(
                     sprintf(
                         'The callback has thrown an exception [%s] %s (%s) in %s:%d',
@@ -157,8 +161,11 @@ class Cache implements CacheInterface
                     $exception
                 );
             }
-            $this->endTagCache();
-            $this->getBitrixCache()->endDataCache([self::RESULT_KEY => $result]);
+            if (false === $this->closureAbortedCache) {
+                $this->startTagCache();
+                $this->endTagCache();
+                $this->getBitrixCache()->endDataCache([self::RESULT_KEY => $result]);
+            }
 
             return $result;
         }
@@ -213,6 +220,7 @@ class Cache implements CacheInterface
      * @throws InvalidArgumentException
      * @return bool true в случае успешной записи или false в случае, если кеш с таким ключом существует.
      * @noinspection PhpMissingParamTypeInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function set($key, $value, $ttl = null)
     {
@@ -247,6 +255,7 @@ class Cache implements CacheInterface
      * @throws InvalidArgumentException
      * @return bool true при успешном удалении или false при ошибке.
      * @noinspection PhpMissingParamTypeInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function delete($key)
     {
@@ -271,6 +280,7 @@ class Cache implements CacheInterface
      * Начисто удаляет все данные в кеше в рамках одного baseDir и path.
      *
      * @return bool true при успешной очистке или false при ошибке.
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function clear()
     {
@@ -289,6 +299,7 @@ class Cache implements CacheInterface
      * @throws InvalidArgumentException
      * @return array<mixed>
      * @noinspection PhpMissingParamTypeInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function getMultiple($keys, $default = null)
     {
@@ -311,6 +322,7 @@ class Cache implements CacheInterface
      *
      * @return bool true в случае успеха или false в случае неудачи.
      * @noinspection PhpMissingParamTypeInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setMultiple($values, $ttl = null)
     {
@@ -332,6 +344,7 @@ class Cache implements CacheInterface
      * @throws InvalidArgumentException
      * @return bool true в случае успеха или false в случае неудачи удаления хотя бы одного из ключей.
      * @noinspection PhpMissingParamTypeInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function deleteMultiple($keys)
     {
@@ -359,6 +372,7 @@ class Cache implements CacheInterface
      * @return bool
      *
      * @noinspection PhpMissingParamTypeInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function has($key)
     {
@@ -407,13 +421,11 @@ class Cache implements CacheInterface
      *
      * @return $this
      * @see callback()
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function abort()
     {
-        $this->getBitrixCache()->abortDataCache();
-        if ($this->hasTags()) {
-            $this->getBitrixTaggedCache()->abortTagCache();
-        }
+        $this->closureAbortedCache = true;
 
         return $this;
     }
@@ -461,6 +473,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setTTL(int $ttl)
     {
@@ -476,6 +489,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setTTLInterval(DateInterval $interval)
     {
@@ -497,6 +511,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setExpirationTime(DateTimeInterface $expirationTime)
     {
@@ -530,6 +545,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setKey(string $key)
     {
@@ -553,6 +569,7 @@ class Cache implements CacheInterface
      * @param string $path Подкаталог, который должен обязательно начинаться со слэша `/` и не заканчиваться им.
      *
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setPath(string $path)
     {
@@ -568,6 +585,7 @@ class Cache implements CacheInterface
      * @param string $class
      *
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setPathByClass(string $class)
     {
@@ -592,6 +610,7 @@ class Cache implements CacheInterface
      * @param string $baseDir
      *
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setBaseDir(string $baseDir)
     {
@@ -614,6 +633,7 @@ class Cache implements CacheInterface
      * Очищает установленные теги кеша.
      *
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function clearTags()
     {
@@ -628,6 +648,7 @@ class Cache implements CacheInterface
      * @param int $iblockId числовой идентификатор инфоблока.
      *
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function addIblockTag(int $iblockId)
     {
@@ -644,6 +665,7 @@ class Cache implements CacheInterface
      *
      * @throws InvalidArgumentException
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function addTag(string $tag)
     {
@@ -659,6 +681,7 @@ class Cache implements CacheInterface
      * @param null|DateInterval|int $ttl
      *
      * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
      */
     private function setMixedTTL($ttl = null)
     {

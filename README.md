@@ -123,6 +123,22 @@
                        }
                    );
     ```
+
+    Тег кеша также можно установить внутри замыкания:
+
+    ```php
+    use WebArch\BitrixCache\Cache;
+    
+    $cache = Cache::create();
+    $result = $cache->callback(
+                        function () use($cache) {
+                            $cache->addTag('closureTag');
+
+                            return date(DATE_ISO8601);
+                        }
+                    );
+    ```
+
 5. Удаление тегированного кеша.
     
     Кеш из предыдущего примера может быть очищен по тегу. Важно, что при очистке по тегу не требуется устанавливать
@@ -274,6 +290,7 @@
     Дополнительная информация описана в документации компонента
     [Symfony Cache](https://symfony.com/doc/5.1/components/cache.html#cache-component-contracts) и соглашения
     [Cache Contracts](https://symfony.com/doc/5.1/components/cache.html#cache-component-contracts).
+
 
 Известные особенности
 ---------------------
