@@ -3,6 +3,11 @@ os: linux
 dist: bionic
 language: php
 
+branches:
+  only:
+    - master
+    - /^\d+\.\d+(\.\d+)?(-\S*)?$/
+
 git:
   depth: 10
   quiet: true
