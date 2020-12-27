@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
          backupGlobals="false"
          backupStaticAttributes="false"
          colors="true"
@@ -9,23 +11,20 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false">
-    <testsuites>
-        <testsuite name="All Test Suites">
-            <directory>src/test</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/main</directory>
-            <exclude>
-                <file>src/main/BitrixCache.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
-    <logging>
-        <log type="junit" target="build/report.junit.xml"/>
-        <log type="coverage-html" target="build/coverage"/>
-        <log type="coverage-text" target="build/coverage.txt"/>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
-    </logging>
+  <testsuites>
+    <testsuite name="All Test Suites">
+      <directory>src/test</directory>
+    </testsuite>
+  </testsuites>
+  <filter>
+    <whitelist>
+      <directory suffix=".php">src/main</directory>
+      <exclude>
+        <file>src/main/BitrixCache.php</file>
+      </exclude>
+    </whitelist>
+  </filter>
+  <logging>
+    <log type="coverage-xml" target="build/coverage.xml" />
+  </logging>
 </phpunit>

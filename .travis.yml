@@ -17,9 +17,10 @@ env:
     - XDEBUG_MODE=coverage
 
 jobs:
+  fast_finish: true
   include:
     - &STANDARD_TEST_JOB
-      stage: "Code style & static code analysis"
+      stage: "Code style, lint and unit"
       php: 7.2
       install:
         - (composer self-update; true)
@@ -28,15 +29,21 @@ jobs:
         - export TRAVIS_PULL_REQUEST TRAVIS_COMMIT_RANGE
         - ./dev-tools/php-cs-check.sh
         - composer check:analyse
+        - composer check:test
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) -s ./build/
+
     - &STANDART_UNIT_TEST_JOB
       <<: *STANDARD_TEST_JOB
-      stage: "Unit tests"
-      php: 7.2
+      stage: "Unit on other PHP versions"
+      php: 7.3
       script:
         - composer check:test
-    -
-      <<: *STANDART_UNIT_TEST_JOB
-      php: 7.3
+
     -
       <<: *STANDART_UNIT_TEST_JOB
       php: 7.4
+
+    -
+      <<: *STANDART_UNIT_TEST_JOB
+      php: 8.0
