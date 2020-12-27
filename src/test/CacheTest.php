@@ -279,7 +279,7 @@ class CacheTest extends CacheFixture
         $this->expectExceptionCode(ErrorCode::ERROR_REFLECTING_CALLBACK);
 
         $this->cache->callback(
-            '\WebArch\BitrixCache\Test\CacheTest::testCallbackReflectionFunctionFailsByNonExistingFunction'
+            [$this,'testCallbackReflectionFunctionFailsByNonExistingFunction']
         );
     }
 
