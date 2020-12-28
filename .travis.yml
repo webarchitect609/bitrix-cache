@@ -39,6 +39,7 @@ jobs:
       php: 7.3
       script:
         - composer check:test
+      after_success: []
 
     -
       <<: *STANDART_UNIT_TEST_JOB
