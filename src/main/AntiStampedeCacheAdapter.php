@@ -57,7 +57,8 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
                 $v = $value;
                 $item = (new CacheItem())->setKey($key)
                                          ->set($value)
-                                         ->setHit($isHit);
+                                         ->setHit($isHit)
+                                         ->setIsTaggable(true);
                 // Detect wrapped values that encode for their expiry and creation duration
                 // For compactness, these values are packed in the key of an array using
                 // magic numbers in the form 9D-..-..-..-..-00-..-..-..-5F
@@ -119,6 +120,7 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
      * @inheritDoc
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function commit()
     {
@@ -212,16 +214,32 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
      * @param array<string, mixed> $values
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function doSave(array $values, int $lifetime)
     {
-        return $this->getCache()->setMultiple($values, $lifetime);
+        $result = 1;
+        foreach ($values as $key => $value) {
+            $cache = $this->getCache();
+            if (
+                array_key_exists($key, $this->tagsByCacheKey)
+                && is_array($this->tagsByCacheKey[$key])
+            ) {
+                foreach ($this->tagsByCacheKey[$key] as $tag) {
+                    $cache->addTag($tag);
+                }
+            }
+            $result &= $cache->set($key, $value, $lifetime);
+        }
+
+        return (bool)$result;
     }
 
     /**
      * @inheritDoc
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function doHave(string $id)
     {
@@ -234,6 +252,7 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
      * @param array<string> $ids
      *
      * @return array<string, mixed>
+     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function doFetch(array $ids)
     {
@@ -254,6 +273,7 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
      * @param array<string> $ids
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function doDelete(array $ids)
     {
@@ -265,6 +285,7 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
      *
      * @return bool
      * @noinspection PhpUnusedParameterInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function doClear(string $namespace)
     {

@@ -329,8 +329,7 @@ class Cache implements CacheInterface
         $this->assertKeys($values, 'Values');
         $result = 1;
         foreach ($values as $key => $value) {
-            $setResult = $this->set($key, $value, $ttl);
-            $result &= $setResult;
+            $result &= $this->set($key, $value, $ttl);
         }
 
         return (bool)$result;
@@ -351,8 +350,7 @@ class Cache implements CacheInterface
         $this->assertKeys($keys, 'Keys');
         $result = 1;
         foreach ($keys as $key) {
-            $deleteResult = $this->delete($key);
-            $result &= $deleteResult;
+            $result &= $this->delete($key);
         }
 
         return (bool)$result;

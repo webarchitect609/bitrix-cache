@@ -198,6 +198,7 @@ final class CacheItem implements ItemInterface
      *
      * @throws InvalidArgumentException When $key is not valid
      * @return string
+     * @noinspection PhpMissingParamTypeInspection
      */
     public static function validateKey($key): string
     {
@@ -253,6 +254,7 @@ final class CacheItem implements ItemInterface
      *
      * @return $this
      * @internal
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setKey($key)
     {
@@ -266,6 +268,7 @@ final class CacheItem implements ItemInterface
      *
      * @return $this
      * @internal
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setHit(bool $isHit)
     {
@@ -279,11 +282,35 @@ final class CacheItem implements ItemInterface
      *
      * @return $this
      * @internal
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setMetadata(array $metadata)
     {
         $this->metadata = $metadata;
 
         return $this;
+    }
+
+    /**
+     * @param bool $isTaggable
+     *
+     * @return $this
+     * @internal
+     * @noinspection PhpMissingReturnTypeInspection
+     */
+    public function setIsTaggable(bool $isTaggable)
+    {
+        $this->isTaggable = $isTaggable;
+
+        return $this;
+    }
+
+    /**
+     * @return array<mixed, mixed>
+     * @internal
+     */
+    public function getNewMetadata(): array
+    {
+        return $this->newMetadata;
     }
 }

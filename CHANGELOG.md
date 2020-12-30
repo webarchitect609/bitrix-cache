@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+1.9.0
+-----
+
+### Добавлено:
+
+- Поддержка тегированного кеша в `\WebArch\BitrixCache\AntiStampedeCacheAdapter`
+
 1.8.0
 -----
 

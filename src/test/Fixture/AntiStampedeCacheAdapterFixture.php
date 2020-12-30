@@ -71,7 +71,8 @@ class AntiStampedeCacheAdapterFixture extends TestCase
                                     'deleteMultiple',
                                     'getMultiple',
                                     'has',
-                                    'setMultiple',
+                                    'set',
+                                    'addTag',
                                 ]
                             )
                             ->getMock();

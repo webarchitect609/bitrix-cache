@@ -59,7 +59,7 @@
       "@check:security"
     ],
     "check:analyse": "vendor/bin/phpstan analyse --ansi --no-progress",
-    "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff",
+    "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff --diff-format udiff",
     "check:security": "@composer update --no-suggest --no-interaction --dry-run roave/security-advisories",
     "check:test": "vendor/bin/phpunit --colors=always"
   },

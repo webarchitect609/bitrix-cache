@@ -4,6 +4,8 @@ namespace WebArch\BitrixCache\Test;
 
 use DateInterval;
 use DateTimeImmutable;
+use Psr\Cache\CacheException;
+use RuntimeException;
 use WebArch\BitrixCache\CacheItem;
 use WebArch\BitrixCache\Enum\ErrorCode;
 use WebArch\BitrixCache\Exception\InvalidArgumentException;
@@ -154,5 +156,45 @@ class CacheItemTest extends CacheItemFixture
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionCode(ErrorCode::RESERVED_CHARACTERS_IN_KEY);
         CacheItem::validateKey('abc/xyz');
+    }
+
+    /**
+     * @phpstan-ignore-next-line
+     * @throws CacheException
+     * @throws \Psr\Cache\InvalidArgumentException
+     * @return void
+     */
+    public function testSetTheSameTagTwice(): void
+    {
+        $tag = 'tagOne';
+        $cacheItem = (new CacheItem())->setIsTaggable(true);
+        $this->assertArrayNotHasKey(CacheItem::METADATA_TAGS, $cacheItem->getNewMetadata());
+        $cacheItem->tag($tag);
+        $tagsAfter = $cacheItem->getNewMetadata()[CacheItem::METADATA_TAGS];
+        $cacheItem->tag($tag);
+        $this->assertEquals([$tag => $tag], $tagsAfter);
+        $this->assertEquals(
+            $tagsAfter,
+            $cacheItem->getNewMetadata()[CacheItem::METADATA_TAGS]
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testNoLoggerTriggersUserWarning(): void
+    {
+        set_error_handler(
+            function (int $errno, string $errstr) {
+                if (E_USER_WARNING === $errno) {
+                    throw new RuntimeException($errstr, $errno);
+                }
+            }
+        );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(E_USER_WARNING);
+        $this->expectExceptionMessage('Test message 1 2');
+        (new CacheItem())::log(null, 'Test message {A} {B}', ['A' => 1, 'B' => 2]);
+        restore_error_handler();
     }
 }

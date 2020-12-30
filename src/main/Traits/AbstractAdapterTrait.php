@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 namespace WebArch\BitrixCache\Traits;
 
@@ -64,6 +65,11 @@ trait AbstractAdapterTrait
     protected $maxIdLength;
 
     /**
+     * @var array<string, array<string, string>> Tags attached to key. Used for temporarry storage before tags are applied on cache save.
+     */
+    protected $tagsByCacheKey = [];
+
+    /**
      * Fetches several cache items.
      *
      * @param array $ids The cache identifiers to fetch
@@ -78,6 +84,7 @@ trait AbstractAdapterTrait
      * @param string $id The identifier for which to check existence
      *
      * @return bool True if item exists in the cache, false otherwise
+     * @noinspection PhpMissingReturnTypeInspection
      */
     abstract protected function doHave(string $id);
 
@@ -87,6 +94,7 @@ trait AbstractAdapterTrait
      * @param string $namespace The prefix used for all identifiers managed by this pool
      *
      * @return bool True if the pool was successfully cleared, false otherwise
+     * @noinspection PhpMissingReturnTypeInspection
      */
     abstract protected function doClear(string $namespace);
 
@@ -96,6 +104,7 @@ trait AbstractAdapterTrait
      * @param array $ids An array of identifiers that should be removed from the pool
      *
      * @return bool True if the items were successfully removed, false otherwise
+     * @noinspection PhpMissingReturnTypeInspection
      */
     abstract protected function doDelete(array $ids);
 
@@ -113,6 +122,7 @@ trait AbstractAdapterTrait
      * {@inheritdoc}
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function hasItem($key)
     {
@@ -139,6 +149,7 @@ trait AbstractAdapterTrait
      * {@inheritdoc}
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function clear(string $prefix = '')
     {
@@ -182,6 +193,7 @@ trait AbstractAdapterTrait
      * {@inheritdoc}
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function deleteItem($key)
     {
@@ -192,6 +204,7 @@ trait AbstractAdapterTrait
      * {@inheritdoc}
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function deleteItems(array $keys)
     {
@@ -266,6 +279,7 @@ trait AbstractAdapterTrait
     /**
      * {@inheritdoc}
      * @return iterable<string, mixed>
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function getItems(array $keys = [])
     {
@@ -296,6 +310,7 @@ trait AbstractAdapterTrait
      * {@inheritdoc}
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function save(CacheItemInterface $item)
     {
@@ -303,14 +318,29 @@ trait AbstractAdapterTrait
             return false;
         }
         $this->deferred[$item->getKey()] = $item;
+        // Remember which tags this item has.
+        $metadata = $item->getNewMetadata();
+        if (
+            array_key_exists(CacheItem::METADATA_TAGS, $metadata)
+            && is_array($metadata[CacheItem::METADATA_TAGS])
+            && count($metadata[CacheItem::METADATA_TAGS]) > 0
+        ) {
+            $this->tagsByCacheKey[$item->getKey()] = $metadata[CacheItem::METADATA_TAGS];
+        }
+        $commit = $this->commit();
+        // Forget tags
+        if (array_key_exists($item->getKey(), $this->tagsByCacheKey)) {
+            unset($this->tagsByCacheKey[$item->getKey()]);
+        }
 
-        return $this->commit();
+        return $commit;
     }
 
     /**
      * {@inheritdoc}
      *
      * @return bool
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function saveDeferred(CacheItemInterface $item)
     {
@@ -333,6 +363,7 @@ trait AbstractAdapterTrait
      * @param bool $enable
      *
      * @return bool the previous state of versioning
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function enableVersioning($enable = true)
     {
