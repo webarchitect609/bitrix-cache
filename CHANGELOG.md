@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+1.9.1
+-----
+
+### Исправлено:
+- формально некорректные вызовы `set_error_handler()` в `\WebArch\BitrixCache\LockRegistry::open()` и
+  `\WebArch\BitrixCache\Test\CacheItemTest::testNoLoggerTriggersUserWarning()`;
+- поддержка `PHP ^8.0`
+
 1.9.0
 -----
 
