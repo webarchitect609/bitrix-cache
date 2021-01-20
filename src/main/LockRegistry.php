@@ -177,7 +177,8 @@ final class LockRegistry
             return $h;
         }
         set_error_handler(
-            function () {
+            function (): bool {
+                return true;
             }
         );
         try {

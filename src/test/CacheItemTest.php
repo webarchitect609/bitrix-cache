@@ -185,10 +185,11 @@ class CacheItemTest extends CacheItemFixture
     public function testNoLoggerTriggersUserWarning(): void
     {
         set_error_handler(
-            function (int $errno, string $errstr) {
+            function (int $errno, string $errstr): bool {
                 if (E_USER_WARNING === $errno) {
                     throw new RuntimeException($errstr, $errno);
                 }
+                return true;
             }
         );
         $this->expectException(RuntimeException::class);
