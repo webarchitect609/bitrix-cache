@@ -1,10 +1,18 @@
 Change Log
 ==========
 
+1.9.2
+-----
+
+### Исправлено:
+
+- по умолчанию в `\WebArch\BitrixCache\LockRegistry` был доступен только один конкурирующий запрос, а теперь 12.
+
 1.9.1
 -----
 
 ### Исправлено:
+
 - формально некорректные вызовы `set_error_handler()` в `\WebArch\BitrixCache\LockRegistry::open()` и
   `\WebArch\BitrixCache\Test\CacheItemTest::testNoLoggerTriggersUserWarning()`;
 - поддержка `PHP ^8.0`

@@ -33,7 +33,19 @@ final class LockRegistry
      * @var array<string> The number of items in this list controls the max number of concurrent processes.
      */
     private static $files = [
+        __DIR__ . DIRECTORY_SEPARATOR . 'Traits/ContractsTrait.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Traits/AbstractAdapterTrait.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Enum/ErrorCode.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Enum/CacheEngineType.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Exception/RuntimeException.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Exception/InvalidArgumentException.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Exception/BadMethodCallException.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Exception/LogicException.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'Cache.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'LockRegistry.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'CacheItem.php',
         __DIR__ . DIRECTORY_SEPARATOR . 'AntiStampedeCacheAdapter.php',
+        __DIR__ . DIRECTORY_SEPARATOR . 'BitrixCache.php',
     ];
 
     /**
