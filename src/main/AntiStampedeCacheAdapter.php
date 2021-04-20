@@ -103,7 +103,6 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
                     // @formatter:off
                     /**
                      * @noinspection PhpUndefinedClassConstantInspection
-                     * @phpstan-ignore-next-line
                      */
                     $byLifetime[$ttl][$getId($key)] = $metadata ? ["\x9D".pack('VN', (int) (0.1 + $metadata[self::METADATA_EXPIRY] - self::METADATA_EXPIRY_OFFSET), $metadata[self::METADATA_CTIME])."\x5F" => $item->value] : $item->value;
                     // @formatter:on
