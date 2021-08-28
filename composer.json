@@ -36,7 +36,7 @@
     "symfony/service-contracts": "^2.1"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^2.16",
+    "friendsofphp/php-cs-fixer": "^3.0",
     "phpstan/phpstan": "^0.12",
     "phpunit/phpunit": "^8.5",
     "roave/security-advisories": "dev-master",
@@ -60,7 +60,7 @@
       "@check:security"
     ],
     "check:analyse": "vendor/bin/phpstan analyse --ansi --no-progress",
-    "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff --diff-format udiff",
+    "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff",
     "check:security": "@composer update --no-suggest --no-interaction --dry-run roave/security-advisories",
     "check:test": "vendor/bin/phpunit --colors=always"
   },
