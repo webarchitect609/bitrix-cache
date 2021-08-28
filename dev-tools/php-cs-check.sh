@@ -20,7 +20,6 @@ fi
 echo "EXTRA_ARGS: ${EXTRA_ARGS}"
 
 vendor/bin/php-cs-fixer fix \
-                            --config=.php_cs.dist \
                             --ansi \
                             --dry-run \
                             --stop-on-violation \
