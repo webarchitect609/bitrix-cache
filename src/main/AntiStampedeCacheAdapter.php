@@ -8,6 +8,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Service\ResetInterface;
 use WebArch\BitrixCache\Traits\AbstractAdapterTrait;
 use WebArch\BitrixCache\Traits\ContractsTrait;
@@ -42,7 +43,6 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
      */
     private $baseDir;
 
-    /** @noinspection PhpUnusedParameterInspection */
     public function __construct(
         string $path = Cache::DEFAULT_PATH,
         int $defaultLifetime = Cache::DEFAULT_TTL,
@@ -68,8 +68,8 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
                     $item->set($v[$k]);
                     $v = unpack('Ve/Nc', substr($k, 1, -1));
                     $metadata = $item->getMetadata();
-                    $metadata[CacheItem::METADATA_EXPIRY] = $v['e'] + CacheItem::METADATA_EXPIRY_OFFSET;
-                    $metadata[CacheItem::METADATA_CTIME] = $v['c'];
+                    $metadata[ItemInterface::METADATA_EXPIRY] = $v['e'] + CacheItem::METADATA_EXPIRY_OFFSET;
+                    $metadata[ItemInterface::METADATA_CTIME] = $v['c'];
                     $item->setMetadata($metadata);
                 }
 
@@ -95,15 +95,14 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
                         $expiredIds[] = $getId($key);
                         continue;
                     }
-                    if (isset(($metadata = $item->newMetadata)[CacheItem::METADATA_TAGS])) {
-                        unset($metadata[CacheItem::METADATA_TAGS]);
+                    if (isset(($metadata = $item->newMetadata)[ItemInterface::METADATA_TAGS])) {
+                        unset($metadata[ItemInterface::METADATA_TAGS]);
                     }
                     // `self` would be \Symfony\Contracts\Cache\ItemInterface, so there're no errors.
                     // For compactness, expiry and creation duration are packed in the key of an array, using magic numbers as separators
                     // @formatter:off
                     /**
                      * @noinspection PhpUndefinedClassConstantInspection
-                     * @phpstan-ignore-next-line
                      */
                     $byLifetime[$ttl][$getId($key)] = $metadata ? ["\x9D".pack('VN', (int) (0.1 + $metadata[self::METADATA_EXPIRY] - self::METADATA_EXPIRY_OFFSET), $metadata[self::METADATA_CTIME])."\x5F" => $item->value] : $item->value;
                     // @formatter:on
@@ -138,8 +137,7 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
                 $e = $this->doSave($values, $lifetime);
             } catch (Exception $e) {
             }
-            /** @phpstan-ignore-next-line */
-            if (true === $e || [] === $e) {
+            if (true === $e) {
                 continue;
             }
             /** @phpstan-ignore-next-line */
@@ -179,8 +177,7 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
                     $e = $this->doSave([$id => $v], $lifetime);
                 } catch (Exception $e) {
                 }
-                /** @phpstan-ignore-next-line */
-                if (true === $e || [] === $e) {
+                if (true === $e) {
                     continue;
                 }
                 $ok = false;
@@ -284,7 +281,6 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
      * @inheritDoc
      *
      * @return bool
-     * @noinspection PhpUnusedParameterInspection
      * @noinspection PhpMissingReturnTypeInspection
      */
     protected function doClear(string $namespace)
