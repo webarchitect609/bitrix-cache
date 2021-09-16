@@ -11,6 +11,7 @@ use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\SimpleCache\CacheInterface;
+use ReflectionException;
 use ReflectionFunction;
 use Throwable;
 use WebArch\BitrixCache\Enum\ErrorCode;
@@ -85,6 +86,13 @@ class Cache implements CacheInterface
     private $closureAbortedCache = false;
 
     /**
+     * @var bool Использование exception chaining при ошибке в кешируемом callback: выбрасывается
+     *     \WebArch\BitrixCache\Exception\RuntimeException, у которого в $previous сохранено фактически возникшее
+     *     исключение.
+     */
+    private $callbackExceptionChaining = true;
+
+    /**
      * @var null|BitrixCache
      */
     private $bitrixCache;
@@ -117,6 +125,7 @@ class Cache implements CacheInterface
      *
      * @throws RuntimeException
      * @throws LogicException
+     * @throws ReflectionException
      * @return mixed Результат выполнения $callback.
      */
     public function callback(callable $callback)
@@ -148,19 +157,24 @@ class Cache implements CacheInterface
                 $this->closureAbortedCache = false;
                 $result = $callback();
             } catch (Throwable $exception) {
-                throw new RuntimeException(
-                    sprintf(
-                        'The callback has thrown an exception [%s] %s (%s) in %s:%d',
-                        get_class($exception),
-                        $exception->getMessage(),
-                        $exception->getCode(),
-                        $exception->getFile(),
-                        $exception->getLine()
-                    ),
-                    ErrorCode::CALLBACK_THROWS_EXCEPTION,
-                    $exception
-                );
+                if ($this->isCallbackExceptionChaining()) {
+                    throw new RuntimeException(
+                        sprintf(
+                            'The callback has thrown an exception [%s] %s (%s) in %s:%d',
+                            get_class($exception),
+                            $exception->getMessage(),
+                            $exception->getCode(),
+                            $exception->getFile(),
+                            $exception->getLine()
+                        ),
+                        ErrorCode::CALLBACK_THROWS_EXCEPTION,
+                        $exception
+                    );
+                }
+                throw $exception;
             }
+            // Условие может измениться при вызове abort() в кешируемом callback
+            /** @noinspection PhpConditionAlreadyCheckedInspection */
             if (false === $this->closureAbortedCache) {
                 $this->startTagCache();
                 $this->endTagCache();
@@ -671,6 +685,31 @@ class Cache implements CacheInterface
         if (!in_array($tag, $this->tags)) {
             $this->tags[] = $tag;
         }
+
+        return $this;
+    }
+
+    /**
+     * Возвращает состояние флага использования exception chaining при ошибке в кешируемом callback.
+     *
+     * @return bool
+     */
+    public function isCallbackExceptionChaining(): bool
+    {
+        return $this->callbackExceptionChaining;
+    }
+
+    /**
+     * Устанавливает или снимает флаг использования exception chaining при ошибке в кешируемом callback.
+     *
+     * @param bool $callbackExceptionChaining
+     *
+     * @return $this
+     * @noinspection PhpMissingReturnTypeInspection
+     */
+    public function setCallbackExceptionChaining(bool $callbackExceptionChaining)
+    {
+        $this->callbackExceptionChaining = $callbackExceptionChaining;
 
         return $this;
     }

@@ -1,12 +1,20 @@
 Change Log
 ==========
 
+1.10.0
+------
+
+### Добавлено:
+
+- возможность отключения exception chaining при ошибке кешируемого callback
+  методом `\WebArch\BitrixCache\Cache::setCallbackExceptionChaining()`.
+
 1.9.3
 -----
 
 ### Исправлено:
 
-- ограничение `psr/cache: ^1.0` для поддержки `PHP 8.0`. 
+- ограничение `psr/cache: ^1.0` для поддержки `PHP 8.0`.
 
 ### Изменено:
 

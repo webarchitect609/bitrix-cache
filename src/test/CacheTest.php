@@ -279,11 +279,12 @@ class CacheTest extends CacheFixture
         $this->expectExceptionCode(ErrorCode::ERROR_REFLECTING_CALLBACK);
 
         $this->cache->callback(
-            [$this,'testCallbackReflectionFunctionFailsByNonExistingFunction']
+            [$this, 'testCallbackReflectionFunctionFailsByNonExistingFunction']
         );
     }
 
     /**
+     * @throws ReflectionException
      * @return void
      */
     public function testCallbackExceptionAbortsCacheIncludingTagged()
@@ -348,6 +349,73 @@ class CacheTest extends CacheFixture
     }
 
     /**
+     * @throws ReflectionException
+     * @return void
+     */
+    public function testCallbackExceptionChainingDisabled()
+    {
+        $this->bitrixCache->expects($this->once())
+                          ->method('startDataCache')
+                          ->with(
+                              Cache::DEFAULT_TTL,
+                              $this->key,
+                              Cache::DEFAULT_PATH,
+                              [],
+                              Cache::DEFAULT_BASE_DIR
+                          )
+                          ->willReturn(true);
+
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('startTagCache')
+                                ->with(Cache::DEFAULT_PATH);
+
+        $tag = 'tag';
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('registerTag')
+                                ->with($tag);
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('abortDataCache');
+
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('abortTagCache');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('endDataCache');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('getVars');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('clean');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('cleanDir');
+
+        $this->bitrixCache->expects($this->never())
+                          ->method('initCache');
+
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('clearByTag');
+
+        $this->bitrixTaggedCache->expects($this->never())
+                                ->method('endTagCache');
+
+        $this->expectException(CommonLogicException::class);
+        $this->expectExceptionCode(784);
+
+        $this->cache->setKey($this->key)
+                    ->addTag($tag)
+                    ->setCallbackExceptionChaining(false)
+                    ->callback(
+                        function () {
+                            throw new CommonLogicException('This is the source exception!', 784);
+                        }
+                    );
+    }
+
+    /**
+     * @throws ReflectionException
      * @return void
      */
     public function testCallbackEncountersGetVarsError()
@@ -992,6 +1060,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
+     * @throws ReflectionException
      * @return void
      */
     public function testBitrixCacheInstantiation()
@@ -1012,6 +1081,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
+     * @throws ReflectionException
      * @return void
      */
     public function testBitrixCacheInstantiationFails()
@@ -1031,6 +1101,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
+     * @throws ReflectionException
      * @return void
      */
     public function testBitrixTaggedCacheInstantiation()
@@ -1051,6 +1122,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
+     * @throws ReflectionException
      * @return void
      */
     public function testBitrixTaggedCacheInstantiationFails()
