@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+1.11.0
+------
+
+### BREAKING CHANGE:
+
+- зависимость от `symfony/cache-contracts: ^2.1` и `symfony/service-contracts: ^2.1` заменена
+  на `symfony/contracts: ^2.5 || ^3.0`
+
 1.10.0
 ------
 
