@@ -936,6 +936,7 @@ class Cache implements CacheInterface
             if (is_null($this->bitrixCache)) {
                 $this->bitrixCache = $this->getBitrixApplication()
                                           ->getCache();
+                $this->bitrixCache->noOutput();
             }
 
             return $this->bitrixCache;
