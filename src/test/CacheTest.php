@@ -150,9 +150,7 @@ class CacheTest extends CacheFixture
             return $this->cachedValue;
         };
         $this->setUpCallbackKey();
-        $atCountBitrixCache = 0;
-        $atCountBitrixTaggedCache = 0;
-        $this->bitrixCache->expects($this->at($atCountBitrixCache++))
+        $this->bitrixCache->expects($this->once())
                           ->method('startDataCache')
                           ->with(
                               Cache::DEFAULT_TTL,
@@ -163,18 +161,18 @@ class CacheTest extends CacheFixture
                           )
                           ->willReturn(true);
 
-        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache++))
+        $this->bitrixTaggedCache->expects($this->once())
                                 ->method('startTagCache')
                                 ->with(Cache::DEFAULT_PATH);
 
-        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache++))
+        $this->bitrixTaggedCache->expects($this->once())
                                 ->method('registerTag')
                                 ->with($tag);
 
-        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache))
+        $this->bitrixTaggedCache->expects($this->once())
                                 ->method('endTagCache');
 
-        $this->bitrixCache->expects($this->at($atCountBitrixCache))
+        $this->bitrixCache->expects($this->once())
                           ->method('endDataCache')
                           ->with([$this->resultKey => $this->cachedValue]);
 
@@ -558,9 +556,9 @@ class CacheTest extends CacheFixture
      */
     public function testTaggedCache()
     {
-        $atCountBitrixCache = 0;
-        $atCountBitrixTaggedCache = 0;
-        $this->bitrixCache->expects($this->at($atCountBitrixCache++))
+        $tag = 'baz';
+
+        $this->bitrixCache->expects($this->once())
                           ->method('startDataCache')
                           ->with(
                               Cache::DEFAULT_TTL,
@@ -571,23 +569,23 @@ class CacheTest extends CacheFixture
                           )
                           ->willReturn(true);
 
-        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache++))
+        $this->bitrixTaggedCache->expects($this->once())
                                 ->method('startTagCache')
                                 ->with(Cache::DEFAULT_PATH);
 
-        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache++))
+        $this->bitrixTaggedCache->expects($this->exactly(2))
                                 ->method('registerTag')
-                                ->with('iblock_id_1');
+                                ->willReturnMap(
+                                    [
+                                        ['iblock_id_1', null],
+                                        [$tag, null],
+                                    ]
+                                );
 
-        $tag = 'baz';
-        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache++))
-                                ->method('registerTag')
-                                ->with($tag);
-
-        $this->bitrixTaggedCache->expects($this->at($atCountBitrixTaggedCache))
+        $this->bitrixTaggedCache->expects($this->once())
                                 ->method('endTagCache');
 
-        $this->bitrixCache->expects($this->at($atCountBitrixCache))
+        $this->bitrixCache->expects($this->once())
                           ->method('endDataCache')
                           ->with([$this->resultKey => $this->cachedValue]);
 
@@ -704,7 +702,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array<string, array>
+     * @return array<string, array<int>>
      */
     public function incorrectTTLDataProvider(): array
     {
@@ -788,7 +786,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array<array>
+     * @return array<array<DateTimeImmutable>>
      */
     public function incorrectExpirationTimeDataProvider(): array
     {
@@ -919,7 +917,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array<array>
+     * @return array<array<string>>
      */
     public function incorrectBaseDirDataProvider(): array
     {
@@ -1000,7 +998,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array<string, array>
+     * @return array<string, array<int>>
      */
     public function invalidIblockIdDataProvider(): array
     {
@@ -1034,7 +1032,7 @@ class CacheTest extends CacheFixture
     }
 
     /**
-     * @return array<array>
+     * @return array<array<null|DateInterval|int>>
      */
     public function mixedTTLDataProvider(): array
     {

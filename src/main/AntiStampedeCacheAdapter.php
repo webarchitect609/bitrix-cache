@@ -140,9 +140,7 @@ class AntiStampedeCacheAdapter implements CacheInterface, CacheItemPoolInterface
             if (true === $e) {
                 continue;
             }
-            /** @phpstan-ignore-next-line */
             if (is_array($e) || 1 === count($values)) {
-                /** @phpstan-ignore-next-line */
                 foreach (is_array($e) ? $e : array_keys($values) as $id) {
                     $ok = false;
                     $v = $values[$id];

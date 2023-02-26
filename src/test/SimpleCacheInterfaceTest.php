@@ -451,40 +451,31 @@ class SimpleCacheInterfaceTest extends CacheFixture
             'key2',
             'key3',
         ];
-        $atCount = 0;
+        $initCacheMap = [];
         foreach ($keysMock as $key) {
+            $initCacheMap[] = [
+                Cache::DEFAULT_TTL,
+                $key,
+                Cache::DEFAULT_PATH,
+                Cache::DEFAULT_BASE_DIR,
+                array_key_exists($key, $cacheMock),
+            ];
             if (array_key_exists($key, $cacheMock)) {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('initCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(true);
                 /**
                  * Наличие кеша делает два вызова getVars.
                  */
+                $getVarsMap = [];
                 for ($i = 0; $i < 2; $i++) {
-                    $this->bitrixCache->expects($this->at($atCount++))
-                                      ->method('getVars')
-                                      ->willReturn(
-                                          [$this->resultKey => $cacheMock[$key]]
-                                      );
+                    $getVarsMap[] = [[$this->resultKey => $cacheMock[$key]]];
                 }
-            } else {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('initCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(false);
+                $this->bitrixCache->expects($this->exactly(2))
+                                  ->method('getVars')
+                                  ->willReturnMap($getVarsMap);
             }
         }
+        $this->bitrixCache->expects($this->exactly(count($keysMock)))
+                          ->method('initCache')
+                          ->willReturnMap($initCacheMap);
 
         $this->bitrixCache->expects($this->never())
                           ->method('startDataCache');
@@ -543,23 +534,30 @@ class SimpleCacheInterfaceTest extends CacheFixture
             'key2' => 'newValue2',
             'key3' => 'newValue3',
         ];
-        $atCount = 0;
+        $startDataCacheMap = [];
+        $endDataCacheMap = [];
         foreach ($setMock as $key => $value) {
-            $this->bitrixCache->expects($this->at($atCount++))
-                              ->method('startDataCache')
-                              ->with(
-                                  Cache::DEFAULT_TTL,
-                                  $key,
-                                  Cache::DEFAULT_PATH,
-                                  [],
-                                  Cache::DEFAULT_BASE_DIR
-                              )
-                              ->willReturn(true);
-
-            $this->bitrixCache->expects($this->at($atCount++))
-                              ->method('endDataCache')
-                              ->with([$this->resultKey => $value]);
+            $startDataCacheMap[] = [
+                Cache::DEFAULT_TTL,
+                $key,
+                Cache::DEFAULT_PATH,
+                [],
+                Cache::DEFAULT_BASE_DIR,
+                true,
+            ];
+            $endDataCacheMap[] = [
+                [$this->resultKey => $value],
+                null,
+            ];
         }
+
+        $this->bitrixCache->expects($this->exactly(3))
+                          ->method('startDataCache')
+                          ->willReturnMap($startDataCacheMap);
+
+        $this->bitrixCache->expects($this->exactly(3))
+                          ->method('endDataCache')
+                          ->willReturnMap($endDataCacheMap);
 
         $this->bitrixCache->expects($this->never())
                           ->method('initCache');
@@ -594,36 +592,30 @@ class SimpleCacheInterfaceTest extends CacheFixture
             'key2' => 'newValue2',
             'key3' => 'newValue3',
         ];
-        $atCount = 0;
+        $startDataCacheMap = [];
+        $endDataCacheMap = [];
         foreach ($setMock as $key => $value) {
-            if (array_key_exists($key, $cacheMock)) {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('startDataCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      [],
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(false);
-            } else {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('startDataCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      [],
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(true);
+            $startDataCacheMap[] = [
+                Cache::DEFAULT_TTL,
+                $key,
+                Cache::DEFAULT_PATH,
+                [],
+                Cache::DEFAULT_BASE_DIR,
+                !array_key_exists($key, $cacheMock),
+            ];
 
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('endDataCache')
-                                  ->with([$this->resultKey => $value]);
+            if (!array_key_exists($key, $cacheMock)) {
+                $endDataCacheMap[] = [[$this->resultKey => $value], null];
             }
         }
+
+        $this->bitrixCache->expects($this->exactly(3))
+                          ->method('startDataCache')
+                          ->willReturnMap($startDataCacheMap);
+
+        $this->bitrixCache->expects($this->exactly(2))
+                          ->method('endDataCache')
+                          ->willReturnMap($endDataCacheMap);
 
         $this->bitrixCache->expects($this->never())
                           ->method('initCache');
@@ -655,26 +647,31 @@ class SimpleCacheInterfaceTest extends CacheFixture
             'key2',
             'key3',
         ];
-        $atCount = 0;
+        $initCacheMap = [];
+        $cleanMap = [];
         foreach ($keys as $key) {
-            $this->bitrixCache->expects($this->at($atCount++))
-                              ->method('initCache')
-                              ->with(
-                                  Cache::DEFAULT_TTL,
-                                  $key,
-                                  Cache::DEFAULT_PATH,
-                                  Cache::DEFAULT_BASE_DIR
-                              )
-                              ->willReturn(true);
-
-            $this->bitrixCache->expects($this->at($atCount++))
-                              ->method('clean')
-                              ->with(
-                                  $key,
-                                  Cache::DEFAULT_PATH,
-                                  Cache::DEFAULT_BASE_DIR
-                              );
+            $initCacheMap[] = [
+                Cache::DEFAULT_TTL,
+                $key,
+                Cache::DEFAULT_PATH,
+                Cache::DEFAULT_BASE_DIR,
+                true,
+            ];
+            $cleanMap[] = [
+                $key,
+                Cache::DEFAULT_PATH,
+                Cache::DEFAULT_BASE_DIR,
+                null,
+            ];
         }
+
+        $this->bitrixCache->expects($this->exactly(3))
+                          ->method('initCache')
+                          ->willReturnMap($initCacheMap);
+
+        $this->bitrixCache->expects($this->exactly(3))
+                          ->method('clean')
+                          ->willReturnMap($cleanMap);
 
         $this->bitrixCache->expects($this->never())
                           ->method('startDataCache');
@@ -707,39 +704,34 @@ class SimpleCacheInterfaceTest extends CacheFixture
             $missingKey,
             'key3',
         ];
-        $atCount = 0;
+        $initCacheMap = [];
+        $cleanMap = [];
         foreach ($keys as $key) {
-            if ($missingKey === $key) {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('initCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(false);
-            } else {
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('initCache')
-                                  ->with(
-                                      Cache::DEFAULT_TTL,
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  )
-                                  ->willReturn(true);
-
-                $this->bitrixCache->expects($this->at($atCount++))
-                                  ->method('clean')
-                                  ->with(
-                                      $key,
-                                      Cache::DEFAULT_PATH,
-                                      Cache::DEFAULT_BASE_DIR
-                                  );
+            $initCacheMap[] = [
+                Cache::DEFAULT_TTL,
+                $key,
+                Cache::DEFAULT_PATH,
+                Cache::DEFAULT_BASE_DIR,
+                $missingKey !== $key,
+            ];
+            if ($missingKey !== $key) {
+                $cleanMap[] = [
+                    $key,
+                    Cache::DEFAULT_PATH,
+                    Cache::DEFAULT_BASE_DIR,
+                    null,
+                ];
             }
         }
 
+        $this->bitrixCache->expects($this->exactly(3))
+                          ->method('initCache')
+                          ->willReturnMap($initCacheMap);
+
+        $this->bitrixCache->expects($this->exactly(2))
+                          ->method('clean')
+                          ->willReturnMap($cleanMap);
+        
         $this->bitrixCache->expects($this->never())
                           ->method('startDataCache');
 

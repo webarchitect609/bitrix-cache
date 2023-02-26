@@ -174,7 +174,6 @@ class Cache implements CacheInterface
                 throw $exception;
             }
             // Условие может измениться при вызове abort() в кешируемом callback
-            /** @noinspection PhpConditionAlreadyCheckedInspection */
             if (false === $this->closureAbortedCache) {
                 $this->startTagCache();
                 $this->endTagCache();
@@ -201,7 +200,7 @@ class Cache implements CacheInterface
      * Возвращает значение из кеша.
      *
      * @param string $key Уникальный идентификатор закешированного значения.
-     * @param mixed $default Значение по умолчанию, которое будет возвращено, если значение отсутствует в кеше.
+     * @param mixed  $default Значение по умолчанию, которое будет возвращено, если значение отсутствует в кеше.
      *
      * @throws InvalidArgumentException Если в $key передано недопустимое значение.
      * @return mixed Значение из кеша или $default в случае "промаха".
@@ -226,8 +225,8 @@ class Cache implements CacheInterface
     /**
      * Сохраняет значение в кеше под уникальным идентификатором с необязательным параметром временем жизни.
      *
-     * @param string $key Уникальный идентификатор закешированного значения.
-     * @param mixed $value Значение для кеширования, которое должно поддерживать сериализацию.
+     * @param string                $key Уникальный идентификатор закешированного значения.
+     * @param mixed                 $value Значение для кеширования, которое должно поддерживать сериализацию.
      * @param null|DateInterval|int $ttl Необязательный параметр. Время жизни кешируемого значения. Если не передан,
      *     используется значение по умолчанию.
      *
@@ -308,7 +307,7 @@ class Cache implements CacheInterface
      * Возвращает множество кешированных значений по множеству уникальных идентификаторов.
      *
      * @param array<string> $keys Множество уникальных идентификаторов.
-     * @param null|mixed $default Значение по умолчанию, которое будет возвращено, если значение отсутствует в кеше.
+     * @param null|mixed    $default Значение по умолчанию, которое будет возвращено, если значение отсутствует в кеше.
      *
      * @throws InvalidArgumentException
      * @return array<mixed>
@@ -330,7 +329,7 @@ class Cache implements CacheInterface
     /**
      * Сохраняет множество пар ключ => значение в кеше с необязательным параметром времени жизни.
      *
-     * @param array<string, mixed> $values Множество пар ключ => значение.
+     * @param array<string, mixed>  $values Множество пар ключ => значение.
      * @param null|DateInterval|int $ttl Необязательный параметр. Время жизни кешируемого значения. Если не передан,
      *     используется значение по умолчанию.
      *
@@ -769,7 +768,7 @@ class Cache implements CacheInterface
     /**
      * @param array<string> $keys
      *
-     * @param string $name
+     * @param string        $name
      *
      * @throws InvalidArgumentException
      * @noinspection PhpMissingParamTypeInspection
@@ -936,6 +935,7 @@ class Cache implements CacheInterface
             if (is_null($this->bitrixCache)) {
                 $this->bitrixCache = $this->getBitrixApplication()
                                           ->getCache();
+                $this->bitrixCache->noOutput();
             }
 
             return $this->bitrixCache;

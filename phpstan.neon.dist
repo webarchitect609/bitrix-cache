@@ -1,5 +1,6 @@
 parameters:
     level: 6 # from 0 to 8, or 'max' as an alias for the highest level
+    treatPhpDocTypesAsCertain: false
     paths:
         - src/main
         - src/test

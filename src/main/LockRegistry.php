@@ -61,7 +61,6 @@ final class LockRegistry
         self::$files = $files;
 
         foreach (self::$openedFiles as $file) {
-            /** @phpstan-ignore-next-line */
             if ($file) {
                 flock($file, LOCK_UN);
                 fclose($file);
@@ -95,7 +94,6 @@ final class LockRegistry
     ) {
         $key = self::$files ? crc32($item->getKey()) % count(self::$files) : -1;
 
-        /** @phpstan-ignore-next-line */
         if ($key < 0 || (self::$lockedFiles[$key] ?? false) || !$lock = self::open($key)) {
             return $callback($item, $save);
         }

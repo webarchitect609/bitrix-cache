@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+1.11.2
+------
+
+### Исправлено:
+
+- Не отключалась буферизация вывода, из-за чего в случае исключения в `callback` могла возникнуть
+  ошибка `[ErrorException] ob_start(): Cannot use output buffering in output buffering display handlers`.
+
 1.11.1
 ------
 

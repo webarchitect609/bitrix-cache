@@ -35,11 +35,11 @@
     "symfony/polyfill-php80": "^1.18"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.0",
-    "phpstan/phpstan": "^0.12",
-    "phpunit/phpunit": "^8.5",
+    "friendsofphp/php-cs-fixer": "^3.4",
+    "phpstan/phpstan": "1.10",
+    "phpunit/phpunit": "^9.6",
     "roave/security-advisories": "dev-master",
-    "webarchitect609/bitrix-taxidermist": "^0.1"
+    "webarchitect609/bitrix-taxidermist": "^0.2.0"
   },
   "autoload": {
     "psr-4": {
@@ -58,9 +58,9 @@
       "@check:test",
       "@check:security"
     ],
-    "check:analyse": "vendor/bin/phpstan analyse --ansi --no-progress",
+    "check:analyse": "vendor/bin/phpstan analyse --ansi --no-progress --xdebug",
     "check:code-style": "vendor/bin/php-cs-fixer fix --ansi --dry-run --diff",
-    "check:security": "@composer update --no-suggest --no-interaction --dry-run roave/security-advisories",
+    "check:security": "@composer update --no-interaction --dry-run roave/security-advisories",
     "check:test": "vendor/bin/phpunit --colors=always"
   },
   "scripts-descriptions": {
