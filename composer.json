@@ -28,16 +28,16 @@
   ],
   "require": {
     "php": "^7.2 || ^8.0",
-    "psr/cache": "^1.0",
-    "psr/log": "^1.1",
-    "psr/simple-cache": "^1.0",
+    "psr/cache": "^1.0|^2.0|^3.0",
+    "psr/log": "^1.1|^2.0|^3.0",
+    "psr/simple-cache": "^1.0|^2.0|^3.0",
     "symfony/contracts": "^1.1.8 || ^2.0 || ^3.0",
     "symfony/polyfill-php80": "^1.18"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.4",
     "phpstan/phpstan": "1.10",
-    "phpunit/phpunit": "^9.6",
+    "phpunit/phpunit": "^9.6|^10.0|^11.0",
     "roave/security-advisories": "dev-master",
     "webarchitect609/bitrix-taxidermist": "^0.2.0"
   },
